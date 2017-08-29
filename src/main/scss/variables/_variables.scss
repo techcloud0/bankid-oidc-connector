@@ -1,0 +1,56 @@
+$root: "bid" !default;
+
+/* Variables */
+$color-blue: #0078bd !default;
+$color-green: #22882C !default;
+$color-header-primary: #ECEAEA !default;
+$color-border-primary: #BABABA !default;
+$color-border-secondary: #BBB !default;
+$color--border-focus: $color-blue !default;
+$color-border-highlight: #666 !default;
+$color-background-primary: #FBFBFB !default;
+
+$text-color--primary: #555 !default;
+$text-color--secondary: #2C2C2C !default;
+$text-color--anchor: #888888 !default;
+
+$size-border-radius: 3px !default;
+
+$font-family: Arial, Helvetica, Verdana, serif !default;
+$text-size--primary: 10px !default;
+
+$client-height--min: 150px !default;
+$client-width--min: 320px !default;
+
+$breakpoint-input: 334px !default;
+$breakpoint-small: 395px !default;
+$breakpoint-medium: 500px !default;
+$breakpoint-large: 640px !default;
+$breakpoint-miniscule-height: 200px !default;
+$breakpoint-mini-height: 250px !default;
+$breakpoint-mini-width: 395px !default;
+$breakpoint-mini-width-form: 370px !default;
+
+$breakpoint-small: 395px !default;
+$breakpoint-medium: 500px !default;
+$breakpoint-large: 768px !default;
+$breakpoint-large-x: 1240px !default;
+
+/* Header/footer */
+$header-footer-height: 46px !default;
+$header-footer-height--mini: 31px !default;
+$header-footer-padding: 5px !default;
+
+/* Content */
+$content__padding: 5px 20px !default;
+$content__padding--mini: 5px 10px !default;
+$content__width--max: 440px !default;
+$content__width--max--small: 350px !default;
+
+/* Section */
+$section__footer__height: 40px !default;
+$section__footer__height--mini: 30px !default;
+$section__footer__border-top: 1px solid $color-border-primary !default;
+$section__footer__padding: 0 10px !default;
+$section__footer__text-size: 12px !default;
+$section__footer__text-size--mini: 10px !default;

@@ -1,0 +1,175 @@
+@import "../variables/variables";
+@import "../mixins/mixins";
+
+$dialog--background-color: rgba(0, 0, 0, 0.15) !default;
+$dialog--animation: fadeIn 100ms ease-in !default;
+$dialog--animation--hide: fadeOut 150ms ease-out !default;
+$dialog--z-index: 10 !default;
+
+$dialog__section__box-shadow--focus: 0 0 0 2px $color--border-focus inset !default;
+
+$dialog__main--width-min: 350px !default;
+$dialog__main--background-color: #FFFFFF !default;
+$dialog__main--width: 90% !default;
+$dialog__main--border: 5px solid rgba(#000, 0.6) !default;
+$dialog__main--border-radius: 2px !default;
+$dialog__main--animation: fadeInUpDelayed 150ms ease-out !default;
+
+$dialog__header--padding-left: 5px !default;
+$dialog__header--text-size: 12px !default;
+$dialog__header--line-height: 30px !default;
+$dialog__header--border-bottom: 1px solid #bbb !default;
+$dialog__header--background-color: #eee !default;
+$dialog__header__headline--box-shadow--focus: 0 -3px 0 0 $color-border-highlight inset !default;
+
+$dialog__section--line-height: 1.4 !default;
+$dialog__section--text-size: 14px !default;
+$dialog__section--padding: 15px 20px !default;
+$dialog__section--padding--focused: 13px 18px !default;
+
+$dialog__close__button--border: 1px solid transparent !default;
+$dialog__close__button--margin: 1px !default;
+$dialog__close__button--padding: 0 5px !default;
+$dialog__close__button--height: 26px !default;
+$dialog__close__button--border-radius: 3px !default;
+$dialog__close__button--text-color: $text-color--primary !default;
+$dialog__close__button--text-size: 10px !default;
+$dialog__close__button--border--active--focus: 1px solid #999 !default;
+$dialog__close__button--background-color--active: #FFF !default;
+
+$dialog__close__button__text--text-size: 12px !default;
+$dialog__close__button__text--margin-bottom: 1px !default;
+$dialog__close__button__text--line-height: 1em !default;
+$dialog__close__button__text--padding-left: 2px !default;
+$dialog__close__button__text--padding-right: 4px !default;
+
+.#{$root} {
+    &__dialog {
+        position: absolute;
+        height: 100%;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        z-index: $dialog--z-index;
+        display: none;
+        overflow: hidden;
+        background-color: $dialog--background-color;
+        vertical-align: middle;
+        animation: $dialog--animation;
+
+        &.#{$root}--visible {
+            display: block;
+        }
+
+        &.hide {
+            opacity: 0;
+            animation: $dialog--animation--hide;
+        }
+
+        &__container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            transform: translate(-50%, -50%);
+
+            p + p {
+                padding-top: 10px;
+            }
+        }
+
+        &__main {
+            width: $dialog__main--width;
+            max-width: $dialog__main--width-min;
+            overflow: hidden;
+            background-color: $dialog__main--background-color;
+            display: block;
+            margin: auto;
+            position: relative;
+            border: $dialog__main--border;
+            border-radius: $dialog__main--border-radius;
+            animation: $dialog__main--animation;
+        }
+
+        &__header {
+            color: $text-color--primary;
+            background-color: $dialog__header--background-color;
+            border-bottom: $dialog__header--border-bottom;
+            line-height: $dialog__header--line-height;
+            font-weight: bold;
+            font-size: $dialog__header--text-size;
+            text-align: left;
+            padding-left: $dialog__header--padding-left;
+
+            &__headline {
+                display: inline-block;
+
+                &:focus {
+                    box-shadow: $dialog__header__headline--box-shadow--focus;
+                }
+            }
+        }
+
+        &__section {
+            font-size: $dialog__section--text-size;
+            color: $text-color--primary;
+            line-height: $dialog__section--line-height;
+            text-align: left;
+
+            $focusable-args: (
+                    'padding-before': $dialog__section--padding,
+                    'padding-after': $dialog__section--padding--focused
+            );
+            @include content-focusable($focusable-args...);
+
+            &--scrollable {
+                @include scroll-indicator;
+            }
+        }
+
+        /* Close button */
+        &__close {
+            position: absolute;
+            top: 1px;
+            right: 0;
+
+            &__button {
+                color: $dialog__close__button--text-color;
+                font-size: $dialog__close__button--text-size;
+                border-radius: $dialog__close__button--border-radius;
+                cursor: pointer;
+                white-space: nowrap;
+                height: $dialog__close__button--height;
+                padding: $dialog__close__button--padding;
+                margin: $dialog__close__button--margin;
+                border: $dialog__close__button--border;
+
+                &:not(:disabled) {
+                    &:active {
+                        border: $dialog__close__button--border--active--focus;
+                        background-color: $dialog__close__button--background-color--active;
+                    }
+                    &:focus,
+                    &:hover {
+                        border: $dialog__close__button--border--active--focus;
+                    }
+                }
+
+                &--text {
+                    padding-right: $dialog__close__button__text--padding-right;
+                    padding-left: $dialog__close__button__text--padding-left;
+                    font-family: inherit;
+                    line-height: $dialog__close__button__text--line-height;
+                    margin-bottom: $dialog__close__button__text--margin-bottom;
+                    font-size: $dialog__close__button__text--text-size;
+                    vertical-align: middle;
+                }
+
+                &--icon {
+                    vertical-align: middle;
+                }
+            }
+        }
+    }
+}
