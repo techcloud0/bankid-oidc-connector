@@ -6,13 +6,13 @@
  * @typedef {Object} BIDOIDCConnect.Configuration
  * @property {String} oauth_url
  * @property {String} method
- * @property {String} clientId
+ * @property {String} client_id
  * @property {String} scope
  * @property {String} response_mode
  * @property {String} response_type
  * @property {String} grant_type
- * @property {String} redirectUri
- * @property {String} applicationName
+ * @property {String} redirect_uri
+ * @property {String} application_name
  * @property {Boolean} skipClientPrompt
  * @property {Boolean} forceClientPrompt
  * @property {Boolean} noStepup
@@ -80,7 +80,7 @@ import UtilHelper from './helper/util-helper.js';
         scope: 'openid',
         response_mode: 'query',
         response_type: 'code',
-        redirectUri: '/',
+        redirect_uri: '/',
         skipClientPrompt: false,
         forceClientPrompt: false,
         noStepup: false,
@@ -533,10 +533,10 @@ import UtilHelper from './helper/util-helper.js';
 
     function doAuthenticateCode( id, code, callback ) {
         doAjax( CLIENT_CONFIG.token_endpoint, {
-            'clientId': CLIENT_CONFIG.clientId,
+            'client_id': CLIENT_CONFIG.client_id,
             'grant_type': CONFIG.grant_type,
             'code': code,
-            'redirectUri': CLIENT_CONFIG.redirectUri
+            'redirect_uri': CLIENT_CONFIG.redirect_uri
         }, ( err, result ) => {
             if ( err ) {
                 doLogout();
@@ -784,13 +784,13 @@ import UtilHelper from './helper/util-helper.js';
         CONFIG.endpoint = config.oauth_url || CONFIG.endpoint;
         CONFIG.grant_type = config.grant_type || CONFIG.grant_type;
         CONFIG.method = config.method || CONFIG.method;
-        CONFIG.storage_key_access = 'xid-access' + '-' + config.clientId;
+        CONFIG.storage_key_access = 'xid-access' + '-' + config.client_id;
 
         if ( ['window', 'redirect', 'inline'].indexOf( CONFIG.method ) === -1 ) {
             return console.error( 'doInit bad method' );
         }
 
-        if ( !config.hasOwnProperty( 'clientId' ) ) {
+        if ( !config.hasOwnProperty( 'client_id' ) ) {
             return console.error( 'doInit missing client id' );
         }
 
@@ -799,14 +799,14 @@ import UtilHelper from './helper/util-helper.js';
             initConfig[key] = config[key];
         } );
 
-        CLIENT_CONFIG.clientId = initConfig.clientId;
+        CLIENT_CONFIG.client_id = initConfig.client_id;
         CLIENT_CONFIG.token_endpoint = initConfig.token_endpoint;
         CLIENT_CONFIG.userinfo_endpoint = initConfig.userinfo_endpoint;
         CLIENT_CONFIG.scope = initConfig.scope;
         CLIENT_CONFIG.response_mode = initConfig.response_mode;
         CLIENT_CONFIG.response_type = initConfig.response_type;
-        CLIENT_CONFIG.redirectUri = initConfig.redirectUri;
-        CLIENT_CONFIG.applicationName = initConfig.applicationName;
+        CLIENT_CONFIG.redirect_uri = initConfig.redirect_uri;
+        CLIENT_CONFIG.application_name = initConfig.application_name;
         CLIENT_CONFIG.state = initConfig.state;
         CLIENT_CONFIG.nonce = initConfig.nonce || createRandom();
         Object.assign( CLIENT_CONFIG, createClientConfig( CLIENT_CONFIG ) );
