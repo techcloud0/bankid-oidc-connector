@@ -2,6 +2,7 @@ const gulp = require( 'gulp' );
 
 const path = require( 'upath' );
 const requireDir = require( 'require-dir-all' );
+const runSequence = require( 'run-sequence' );
 
 requireDir( path.resolve( __dirname, 'src/tools/gulp' ), {
     recurse: true,
@@ -9,6 +10,10 @@ requireDir( path.resolve( __dirname, 'src/tools/gulp' ), {
 } );
 
 gulp.task( 'connector', ['connector:scss:watch', 'connector:js:watch'] );
+
+gulp.task( 'connector:dist', ( cb ) => {
+    runSequence( 'connector:clean:dist', ['connector:js:dist', 'connector:scss:dist'], cb );
+} );
 
 gulp.task( 'connector:test', ['connector:test:unit'] );
 

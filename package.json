@@ -8,6 +8,7 @@
     "test": "gulp connector:test"
   },
   "port": 3000,
+  "clientName": "connector",
   "dependencies": {
     "babel-core": "^6.25.0",
     "babel-loader": "^7.1.1",
@@ -43,10 +44,12 @@
     "phantomjs-polyfill": "0.0.2",
     "require-dir-all": "^0.4.12",
     "require-nocache": "^1.0.0",
+    "run-sequence": "^2.1.0",
     "upath": "^1.0.0",
     "webpack": "^3.3.0"
   },
   "devDependencies": {
+    "del": "^3.0.0",
     "gulp-changed": "^3.1.0",
     "gulp-compass": "^2.1.0",
     "gulp-connect": "^5.0.0",

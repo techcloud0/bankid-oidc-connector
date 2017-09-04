@@ -14,7 +14,7 @@ const ROOT = '../../../';
 const SCSS_SRC_FOLDER = path.resolve( __dirname, ROOT, 'src/main/scss' );
 const SCSS_SRC_FILES = path.resolve( __dirname, ROOT, SCSS_SRC_FOLDER, '**/*.scss' );
 const SCSS_BUILD_FOLDER = path.resolve( __dirname, ROOT, 'src/main/public/css' );
-const SCSS_DIST_FOLDER = path.resolve( __dirname, ROOT, 'dist' );
+const SCSS_DIST_FOLDER = path.resolve( __dirname, ROOT, 'dist/css' );
 const SCSS_FILE = path.resolve( __dirname, ROOT, 'src/main/scss/oidc-connector.scss' );
 
 gulp.task( 'connector:scss', function () {
