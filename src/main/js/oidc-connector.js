@@ -18,6 +18,8 @@
  * @property {Boolean} noStepup
  * @property {String} client_type
  * @property {String} user_profile
+ * @property {String} ui_locales
+ * @property {String} acr_values
  * @memberOf BIDOIDCConnect
  */
 
@@ -69,7 +71,7 @@
  */
 
 import Dialog from './component/dialog.component';
-
+import EVENT_CONSTANTS from './constants/event.constants';
 import UtilHelper from './helper/util-helper.js';
 
 ( function ( context, Dialog ) {
@@ -84,8 +86,10 @@ import UtilHelper from './helper/util-helper.js';
         skipClientPrompt: false,
         forceClientPrompt: false,
         noStepup: false,
-        client_type: 'XID',
+        ui_locales: 'nb',
+        client_type: '',
         user_profile: '',
+        acr_values: '4',
         nonce: '',
         state: 'untouched',
         token_endpoint: `${oAuthUrl}/token`,
@@ -252,7 +256,7 @@ import UtilHelper from './helper/util-helper.js';
     }
 
     function doSendLoadedEvent() {
-        document.body.dispatchEvent( new window.CustomEvent( 'xid-loaded' ) );
+        document.body.dispatchEvent( new window.CustomEvent( EVENT_CONSTANTS.LOADED_EVENT ) );
     }
 
     /**
@@ -618,7 +622,7 @@ import UtilHelper from './helper/util-helper.js';
         console.log( 'doConnect', clientConfig );
         const authorizeUrl = createAuthorizeClientUrl( clientConfig );
 
-        switch ( CONFIG.method ) {
+        switch ( config.method || CONFIG.method ) {
             case 'window': {
                 let loginWindow;
                 if ( !isIgnoreWindow ) {
@@ -808,12 +812,14 @@ import UtilHelper from './helper/util-helper.js';
         CLIENT_CONFIG.redirect_uri = initConfig.redirect_uri;
         CLIENT_CONFIG.application_name = initConfig.application_name;
         CLIENT_CONFIG.state = initConfig.state;
+        CLIENT_CONFIG.ui_locales = initConfig.ui_locales;
+        CLIENT_CONFIG.acr_values = initConfig.acr_values;
         CLIENT_CONFIG.nonce = initConfig.nonce || createRandom();
         Object.assign( CLIENT_CONFIG, createClientConfig( CLIENT_CONFIG ) );
         console.log( 'doInit', CLIENT_CONFIG );
     }
 
-    context.XID = {
+    context.BID = {
         doConnect: doConnect,
         doInit: doInit,
         doLogout: doLogout,
