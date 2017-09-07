@@ -141,7 +141,7 @@ import UtilHelper from './helper/util-helper.js';
         const userProfile = typeof config.user_profile !== 'undefined' ? config.user_profile : DEFAULT_CLIENT_CONFIG.user_profile;
 
         const login_hint = [];
-        const allowedClientTypes = ['XID', 'BID', 'BIM'];
+        const allowedClientTypes = ['XID', 'BID', 'BIM', 'OBIM'];
 
         if ( allowedClientTypes.indexOf( clientType.toUpperCase() ) !== -1 ) {
             login_hint.push( clientType.toUpperCase() );
