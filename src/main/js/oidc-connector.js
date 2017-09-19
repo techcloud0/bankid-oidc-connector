@@ -628,7 +628,8 @@ import UtilHelper from './helper/util-helper.js';
         console.log( 'doConnect', clientConfig );
         const authorizeUrl = createAuthorizeClientUrl( clientConfig );
 
-        switch ( config.method || CONFIG.method ) {
+        const method = ( config && config.method ) ? config.method : CONFIG.method;
+        switch ( method ) {
             case 'window': {
                 let loginWindow;
                 if ( !isIgnoreWindow ) {
