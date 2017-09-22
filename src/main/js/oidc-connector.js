@@ -89,7 +89,7 @@ import UtilHelper from './helper/util-helper.js';
         ui_locales: 'nb',
         client_type: '',
         user_profile: '',
-        acr_values: '4',
+        acr_values: '',
         nonce: '',
         state: 'untouched',
         token_endpoint: `${oAuthUrl}/token`,
