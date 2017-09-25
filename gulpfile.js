@@ -17,4 +17,4 @@ gulp.task( 'connector:dist', ( cb ) => {
 
 gulp.task( 'connector:test', ['connector:test:unit'] );
 
-gulp.task( 'connector:dev', ['connector:server'] );
+gulp.task( 'connector:dev', ['connector', 'connector:server'] );
