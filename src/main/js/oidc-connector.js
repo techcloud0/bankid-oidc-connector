@@ -12,14 +12,14 @@
  * @property {String} response_type
  * @property {String} grant_type
  * @property {String} redirect_uri
- * @property {String} application_name
- * @property {Boolean} skipClientPrompt
- * @property {Boolean} forceClientPrompt
- * @property {Boolean} noStepup
  * @property {String} client_type
  * @property {String} user_profile
  * @property {String} ui_locales
  * @property {String} acr_values
+ * @property {String} state
+ * @property {String} nonce
+ * @property {String} userinfo_url
+ * @property {String} token_url
  * @memberOf BIDOIDCConnect
  */
 
@@ -72,36 +72,35 @@
 
 import Dialog from './component/dialog.component';
 import EVENT_CONSTANTS from './constants/event.constants';
+import CONNECTOR_CONSTANTS from './constants/connector.constants';
 import UtilHelper from './helper/util-helper.js';
+import OIDCConfig from './config/oidc.config';
+import ConnectorConfig from './config/connector.config';
 
-( function ( context, Dialog ) {
+( function ( context ) {
 
-    let oAuthUrl = '/';
-
-    const DEFAULT_CLIENT_CONFIG = {
+    const CLIENT_CONFIG = new OIDCConfig( {
         scope: 'openid',
         response_mode: 'query',
         response_type: 'code',
-        redirect_uri: '/',
-        skipClientPrompt: false,
-        forceClientPrompt: false,
-        noStepup: false,
+        redirect_uri: '',
         ui_locales: 'nb',
         client_type: '',
         user_profile: '',
         acr_values: '',
-        nonce: '',
+        nonce: createRandom(),
         state: 'untouched',
-        token_endpoint: `${oAuthUrl}/token`,
-        userinfo_endpoint: `${oAuthUrl}/userinfo`
-    };
-    const CLIENT_CONFIG = {};
-    const CONFIG = {
-        method: 'window',
-        endpoint: oAuthUrl,
+        login_hint: '',
+        id_token_hint: '',
+        prompt: ''
+    } );
+    const CONFIG = new ConnectorConfig( {
+        method: 'redirect',
+        oauth_url: '',
         grant_type: 'authorization_code',
-        storage_key_access: 'xid-access'
-    };
+        userinfo_url: '',
+        token_url: '',
+    } );
     /**
      * @type {{id: {BIDOIDCConnect.ConnectButton}}}
      */
@@ -134,11 +133,12 @@ import UtilHelper from './helper/util-helper.js';
     }
 
     function createLoginHintFromConfig( config ) {
-        const directConsent = typeof config.skipClientPrompt !== 'undefined' ? config.skipClientPrompt : DEFAULT_CLIENT_CONFIG.skipClientPrompt;
-        const forceConfirm = typeof config.forceClientPrompt !== 'undefined' ? config.forceClientPrompt : DEFAULT_CLIENT_CONFIG.forceClientPrompt;
-        const noStepup = typeof config.noStepup !== 'undefined' ? config.noStepup : DEFAULT_CLIENT_CONFIG.noStepup;
-        const clientType = typeof config.client_type !== 'undefined' ? config.client_type : DEFAULT_CLIENT_CONFIG.client_type;
-        const userProfile = typeof config.user_profile !== 'undefined' ? config.user_profile : DEFAULT_CLIENT_CONFIG.user_profile;
+        if ( config.login_hint ) {
+            return config.login_hint;
+        }
+
+        const clientType = typeof config.client_type !== 'undefined' ? config.client_type : '';
+        const userProfile = typeof config.user_profile !== 'undefined' ? config.user_profile : '';
 
         const login_hint = [];
         const allowedClientTypes = ['XID', 'BID', 'BIM', 'OBIM', 'DUMMY'];
@@ -149,18 +149,6 @@ import UtilHelper from './helper/util-helper.js';
 
         if ( userProfile ) {
             login_hint.push( ':' + userProfile );
-        }
-
-        if ( directConsent ) {
-            login_hint.push( ':directconsent' );
-        }
-
-        if ( noStepup ) {
-            login_hint.push( ':nostepup' );
-        }
-
-        if ( forceConfirm ) {
-            login_hint.push( ':forceconfirm' );
         }
         return login_hint.join( '' );
     }
@@ -181,9 +169,6 @@ import UtilHelper from './helper/util-helper.js';
                 config[key] = CLIENT_CONFIG[key];
             }
         } );
-
-        // Update login hint based on current config
-        config.login_hint = createLoginHintFromConfig( config );
         return config;
     }
 
@@ -229,7 +214,9 @@ import UtilHelper from './helper/util-helper.js';
     }
 
     function objectToURL( obj ) {
-        return Object.keys( obj ).map( key => `${key}=${encodeURIComponent( obj[key] )}` ).join( '&' );
+        return Object.keys( obj )
+            .filter( key => { return CONNECTOR_CONSTANTS.ALLOWED_PARAMS.indexOf(key) > -1; })
+            .map( key => `${key}=${encodeURIComponent( obj[key] )}` ).join( '&' );
     }
 
     function onLoad() {
@@ -542,7 +529,7 @@ import UtilHelper from './helper/util-helper.js';
     }
 
     function doAuthenticateCode( id, code, callback ) {
-        doAjax( CLIENT_CONFIG.token_endpoint, {
+        doAjax( CONFIG.token_url, {
             'client_id': CLIENT_CONFIG.client_id,
             'grant_type': CONFIG.grant_type,
             'code': code,
@@ -579,7 +566,7 @@ import UtilHelper from './helper/util-helper.js';
 
     function createAuthorizeClientUrl( clientConfig ) {
         const objectUrl = objectToURL( clientConfig );
-        return `${CONFIG.endpoint}?${objectUrl}`;
+        return `${CONFIG.oauth_url}?${objectUrl}`;
     }
 
     /**
@@ -625,6 +612,8 @@ import UtilHelper from './helper/util-helper.js';
         }
 
         const clientConfig = createClientConfig( id, config );
+        clientConfig.login_hint = createLoginHintFromConfig( clientConfig );
+
         console.log( 'doConnect', clientConfig );
         const authorizeUrl = createAuthorizeClientUrl( clientConfig );
 
@@ -762,7 +751,7 @@ import UtilHelper from './helper/util-helper.js';
             headers.Authorization = `${tokenType} ${accessToken}`;
         }
 
-        doAjax( CLIENT_CONFIG.userinfo_endpoint, data, ( err, result ) => {
+        doAjax( CONFIG.userinfo_url, data, ( err, result ) => {
             if ( err ) {
                 doLogout();
                 callback( err );
@@ -792,10 +781,10 @@ import UtilHelper from './helper/util-helper.js';
             return console.error( ' doInit missing config object' );
         }
 
-        CONFIG.endpoint = config.oauth_url || CONFIG.endpoint;
+        CONFIG.oauth_url = config.oauth_url || CONFIG.oauth_url;
         CONFIG.grant_type = config.grant_type || CONFIG.grant_type;
         CONFIG.method = config.method || CONFIG.method;
-        CONFIG.storage_key_access = 'xid-access' + '-' + config.client_id;
+        CONFIG.storage_key_access += '-' + config.client_id;
 
         if ( ['window', 'redirect', 'inline'].indexOf( CONFIG.method ) === -1 ) {
             return console.error( 'doInit bad method' );
@@ -805,25 +794,19 @@ import UtilHelper from './helper/util-helper.js';
             return console.error( 'doInit missing client id' );
         }
 
-        let initConfig = DEFAULT_CLIENT_CONFIG;
-        Object.keys( config ).forEach( key => {
-            initConfig[key] = config[key];
-        } );
-
-        CLIENT_CONFIG.client_id = initConfig.client_id;
-        CLIENT_CONFIG.token_endpoint = initConfig.token_endpoint;
-        CLIENT_CONFIG.userinfo_endpoint = initConfig.userinfo_endpoint;
-        CLIENT_CONFIG.scope = initConfig.scope;
-        CLIENT_CONFIG.response_mode = initConfig.response_mode;
-        CLIENT_CONFIG.response_type = initConfig.response_type;
-        CLIENT_CONFIG.redirect_uri = initConfig.redirect_uri;
-        CLIENT_CONFIG.application_name = initConfig.application_name;
-        CLIENT_CONFIG.state = initConfig.state;
-        CLIENT_CONFIG.ui_locales = initConfig.ui_locales;
-        CLIENT_CONFIG.acr_values = initConfig.acr_values;
-        CLIENT_CONFIG.nonce = initConfig.nonce || createRandom();
-        Object.assign( CLIENT_CONFIG, createClientConfig( CLIENT_CONFIG ) );
+        CLIENT_CONFIG.login_hint = createLoginHintFromConfig( config );
+        CLIENT_CONFIG.client_id = config.client_id;
+        CLIENT_CONFIG.scope = config.scope || CLIENT_CONFIG.scope;
+        CLIENT_CONFIG.response_mode = config.response_mode || CLIENT_CONFIG.response_mode;
+        CLIENT_CONFIG.response_type = config.response_type || CLIENT_CONFIG.response_type;
+        CLIENT_CONFIG.redirect_uri = config.redirect_uri || CLIENT_CONFIG.redirect_uri;
+        CLIENT_CONFIG.state = config.state || CLIENT_CONFIG.state;
+        CLIENT_CONFIG.ui_locales = config.ui_locales || CLIENT_CONFIG.ui_locales;
+        CLIENT_CONFIG.acr_values = config.acr_values || CLIENT_CONFIG.acr_values;
+        CLIENT_CONFIG.nonce = config.nonce || CLIENT_CONFIG.nonce;
+        Object.assign( CLIENT_CONFIG, createClientConfig( null, config ) );
         console.log( 'doInit', CLIENT_CONFIG );
+        console.log( 'doInit', CONFIG );
     }
 
     context.BID = {
@@ -834,4 +817,4 @@ import UtilHelper from './helper/util-helper.js';
     };
 
     context.addEventListener( 'load', onLoad, false );
-} )( window, Dialog );
+} )( window );
