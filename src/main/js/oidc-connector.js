@@ -215,7 +215,7 @@ import ConnectorConfig from './config/connector.config';
 
     function objectToURL( obj ) {
         return Object.keys( obj )
-            .filter( key => { return CONNECTOR_CONSTANTS.ALLOWED_PARAMS.indexOf(key) > -1; })
+            .filter( key => { return CONNECTOR_CONSTANTS.ALLOWED_PARAMS.indexOf( key ) > -1; } )
             .map( key => `${key}=${encodeURIComponent( obj[key] )}` ).join( '&' );
     }
 
@@ -529,6 +529,7 @@ import ConnectorConfig from './config/connector.config';
     }
 
     function doAuthenticateCode( id, code, callback ) {
+        console.log( 'doAuthenticateCode', CONFIG.grant_type, code );
         doAjax( CONFIG.token_url, {
             'client_id': CLIENT_CONFIG.client_id,
             'grant_type': CONFIG.grant_type,
@@ -784,6 +785,8 @@ import ConnectorConfig from './config/connector.config';
         CONFIG.oauth_url = config.oauth_url || CONFIG.oauth_url;
         CONFIG.grant_type = config.grant_type || CONFIG.grant_type;
         CONFIG.method = config.method || CONFIG.method;
+        CONFIG.token_url = config.token_url || CONFIG.token_url;
+        CONFIG.userinfo_url = config.userinfo_url || CONFIG.userinfo_url;
         CONFIG.storage_key_access += '-' + config.client_id;
 
         if ( ['window', 'redirect', 'inline'].indexOf( CONFIG.method ) === -1 ) {

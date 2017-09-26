@@ -96,7 +96,7 @@ fabric.properties
 
 *.js.map
 dist/
-/data.dev.custom.json
+/config.custom.json
 
 /.vscode/
 

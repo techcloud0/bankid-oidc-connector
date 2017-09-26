@@ -2,7 +2,7 @@ const fs = require( 'fs' );
 const path = require( 'upath' );
 const extend = require( 'extend' );
 
-const ROOT = '../../';
+const ROOT = '../../../';
 const DATA_FILE = path.resolve( __dirname, ROOT, 'config.json' );
 const DATA_CUSTOM_FILE = path.resolve( __dirname, ROOT, 'config.custom.json' );
 
