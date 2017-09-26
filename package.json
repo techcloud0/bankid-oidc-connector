@@ -51,12 +51,16 @@
   },
   "devDependencies": {
     "del": "^3.0.0",
+    "extend": "^3.0.1",
+    "formidable": "^1.1.1",
     "gulp-changed": "^3.1.0",
     "gulp-compass": "^2.1.0",
     "gulp-connect": "^5.0.0",
     "gulp-minify-css": "^1.2.4",
     "gulp-plumber": "^1.1.0",
     "maven-deploy": "^1.5.0",
-    "mime": "^2.0.2"
+    "mime": "^2.0.2",
+    "request-promise": "^4.2.2",
+    "upath": "^1.0.0"
   }
 }

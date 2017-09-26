@@ -1,0 +1,5 @@
+{
+    "clientSecret": "changeme",
+    "tokenUrl": "/api/token",
+    "userInfoUrl": "/api/userinfo"
+}

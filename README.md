@@ -16,9 +16,14 @@ Check `src/main/public/examples/simple.html` for current usage.
 ## Development
 
 ### Install dependencies
+
 ```
 npm install
 ```
+
+### Configure development environment
+
+Check `config.json` and create your own `config.custom.json` to override configuration.
 
 ### Build and run
 

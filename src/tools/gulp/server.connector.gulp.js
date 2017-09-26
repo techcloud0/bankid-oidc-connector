@@ -11,6 +11,7 @@ const bodyParser = require( 'body-parser' );
 const url = require( 'url' );
 const fs = require( 'fs' );
 const mime = require( 'mime' );
+const oauthServerMiddleware = require( '../server/oauth.server-middleware' );
 
 const packageJson = require( path.resolve( __dirname, ROOT, 'package.json' ) );
 
@@ -91,6 +92,7 @@ gulp.task( 'connector:server', () => {
         } );
     } ) );
 
+    middlewareList.push( oauthServerMiddleware );
     middlewareList.push( bodyParser.json() );
 
     return connect.server( {
