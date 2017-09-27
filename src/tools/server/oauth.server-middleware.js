@@ -49,7 +49,7 @@ module.exports = function oauthMiddleware( req, res, next ) {
         const form = new formidable.IncomingForm();
         form.parse( req, function ( err, fields ) {
             const options = {
-                uri: CONFIG['xidBackendOauthUserInfoUrl'],
+                uri: CONFIG['userInfoUrl'],
                 headers: {
                     Authorization: `${fields['token_type']} ${fields['access_token']}`,
                 },

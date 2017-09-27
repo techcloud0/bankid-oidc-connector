@@ -11,6 +11,8 @@ export default {
         'scope',
         'id_token_hint',
         'prompt',
-        'acr_values'
+        'acr_values',
+        'grant_type',
+        'code'
     ]
 };
