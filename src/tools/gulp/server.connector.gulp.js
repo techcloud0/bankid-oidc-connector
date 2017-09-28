@@ -11,6 +11,7 @@ const bodyParser = require( 'body-parser' );
 const url = require( 'url' );
 const fs = require( 'fs' );
 const mime = require( 'mime' );
+const responseFormPostMiddleware = require( '../server/response-form-post.server-middleware' );
 const oauthServerMiddleware = require( '../server/oauth.server-middleware' );
 
 const packageJson = require( path.resolve( __dirname, ROOT, 'package.json' ) );
@@ -36,6 +37,8 @@ function generateMiddleware( pathRegExp, callback ) {
 
 gulp.task( 'connector:server', () => {
     let middlewareList = [];
+
+    middlewareList.push( responseFormPostMiddleware );
 
     // Handle OIDC /callback
     middlewareList.push( generateMiddleware( /callback/, ( req, res, next ) => {
@@ -80,6 +83,10 @@ gulp.task( 'connector:server', () => {
             }
             else {
                 const mimeType = mime.getType( filePath );
+
+                if (res.locals && res.locals.form_data) {
+                    result = result.replace(/{\w+}/g, JSON.stringify( res.locals.form_data ) );
+                }
 
                 res.writeHead( 200, { 'Content-Type': mimeType } );
                 if ( /^image\//.test( mimeType || '' ) ) {
