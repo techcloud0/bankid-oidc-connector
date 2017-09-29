@@ -415,6 +415,48 @@ import ConnectorConfig from './config/connector.config';
                     element.removeEventListener( 'message', actionCallback );
                     break;
                 }
+                case 'xid-id-token': {
+                    console.log( 'idTokenReceived:', data );
+                    if ( loginWindow ) {
+                        loginWindow.close();
+                    }
+                    if ( xIdLoginModal ) {
+                        xIdLoginModal.hideDialog();
+                    }
+
+                    if ( !callback && !!connectButton ) {
+                        callback = ( err ) => {
+                            if ( err ) {
+                                doSendUserEvent( id, err );
+                            }
+                            else {
+                                doGetUserInfo( ( err, user ) => doSendUserEvent( id, err, user || null ) );
+                            }
+                        }
+                    }
+
+                    if ( inlineElement ) {
+                        // Reset inline element
+                        inlineElement.innerHTML = '';
+                    }
+
+                    if ( data.error ) {
+                        doLogout();
+                        doSendConnectEvent( id, data.error );
+
+                        if ( callback ) {
+                            callback( { error: data.error } );
+                        }
+                    }
+                    else {
+                        if ( callback ) {
+                            callback( null, data.data );
+                        }
+                    }
+
+                    element.removeEventListener( 'message', actionCallback );
+                    break;
+                }
                 case 'xid-error': {
                     if ( loginWindow ) {
                         loginWindow.close();
