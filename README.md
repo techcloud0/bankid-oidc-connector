@@ -30,3 +30,12 @@ Check `config.json` and create your own `config.custom.json` to override configu
 ```
 gulp connector:dev
 ```
+
+## Additional reading
+OpenID Connect supports three different flows
+* Authorization Code Flow
+* Implicit Flow
+* Hybrid Flow
+
+Each of these flows fits a certain kind of use. Here is a good resource explaining what properties each flow supports (helps you determine what flow to select for each use case).
+http://openid.net/specs/openid-connect-core-1_0.html#Authentication

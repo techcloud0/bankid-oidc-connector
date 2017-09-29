@@ -579,7 +579,7 @@ import ConnectorConfig from './config/connector.config';
      * @param {HTMLElement} [inlineElementID]
      * @param {Boolean} [inlineModalWindow]
      */
-    function doConnect( { callback, config, onActionCallback, inlineOnLoadCallback, inlineElementID, inlineModalWindow } ) {
+    function doConnect(  {callback, config, onActionCallback, inlineOnLoadCallback, inlineElementID, inlineModalWindow } ) {
         _doConnect( {
             callback: callback,
             config: config,
