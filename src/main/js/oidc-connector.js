@@ -140,6 +140,9 @@ import ConnectorConfig from './config/connector.config';
 
         const clientType = typeof config.client_type !== 'undefined' ? config.client_type : '';
         const userProfile = typeof config.user_profile !== 'undefined' ? config.user_profile : '';
+        const unsolicited = typeof config.unsolicited !== 'undefined' ? config.unsolicited : '';
+        const noDialog = typeof config.noDialog !== 'undefined' ? config.noDialog : '';
+        const userintent = typeof config.userintent !== 'undefined' ? config.userintent : '';
 
         const login_hint = [];
         const allowedClientTypes = ['XID', 'BID', 'BIM', 'OBIM', 'DUMMY'];
@@ -151,6 +154,16 @@ import ConnectorConfig from './config/connector.config';
         if ( userProfile ) {
             login_hint.push( ':' + userProfile );
         }
+
+        // TODO Refactor to xID specific part
+        if ( unsolicited && noDialog ) {
+            login_hint.push( ':unsolicited:nodialog' );
+        } else if ( unsolicited ) {
+            login_hint.push( ':unsolicited' );
+        } else {
+            login_hint.push( ':userintent' );
+        }
+
         return login_hint.join( '' );
     }
 
@@ -866,6 +879,9 @@ import ConnectorConfig from './config/connector.config';
         doLogout: doLogout,
         doGetUserInfo: doGetUserInfo
     };
+
+    // TODO Refactor to xID specific part
+    context.XID = context.BID;
 
     context.addEventListener( 'load', onLoad, false );
 } )( window );
