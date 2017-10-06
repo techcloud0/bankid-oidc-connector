@@ -192,26 +192,10 @@ import ConnectorConfig from './config/connector.config';
         let iframeElement = document.createElement( 'iframe' );
         iframeElement.height = '0px';
         iframeElement.width = '0px';
-
-        // TODO: This is a quickfix - implement in a better way another time
-        const scenarioID = UtilHelper.urlSearchToObj( window.location.search )['scenarioId'];
-        let service = 'XID';
-
-        switch ( scenarioID ) {
-            case '1a':
-            case '1b': {
-                iframeElement.setAttribute( 'src', 'components/bid_connect_button.html' );
-                service = 'BankID';
-                break;
-            }
-
-            default:
-                iframeElement.setAttribute( 'src', 'components/bid-xid_connect_button.html' );
-        }
-
+        iframeElement.setAttribute( 'src', 'components/bid-xid_connect_button.html' );
         iframeElement.setAttribute( 'frameborder', '0' );
         iframeElement.setAttribute( 'scrolling', 'no' );
-        iframeElement.onload = () => doInitConnectButtonIframe( id, service );
+        iframeElement.onload = () => doInitConnectButtonIframe( id, 'xID' );
 
         connectButtons[id] = {
             iframe: iframeElement,

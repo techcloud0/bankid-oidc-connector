@@ -74,7 +74,7 @@ gulp.task( 'connector:server', () => {
         // &state=af0ifjsldkj
 
         // Could actually just return the examples/result.html
-        const filePath = path.resolve( PUBLIC_FOLDER, 'examples/result.html' );
+        const filePath = path.resolve( PUBLIC_FOLDER, 'examples/example_callback_page.html' );
         fs.readFile( filePath, 'UTF-8', ( err, result ) => {
             if ( err ) {
                 console.error( 'File \'%s\' does not exist', filePath );
