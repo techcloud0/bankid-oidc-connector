@@ -1,6 +1,6 @@
 {
   "name": "bankid-oidc-connector",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "BankID OIDC connector library for easy integration of BankID authentication on your site.",
   "author": "Knowit",
   "license": "ISC",
