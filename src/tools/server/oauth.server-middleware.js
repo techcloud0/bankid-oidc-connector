@@ -58,16 +58,19 @@ module.exports = function oauthMiddleware( req, res, next ) {
 
             rp( options )
                 .then( function ( response ) {
+                    console.log( 'token response', response );
+
                     // FIXME: Sometimes the userinfo response includes errounous newlines
                     try {
                         response = JSON.parse( response.replace( /(\r\n|\n|\r)/gm, '' ) );
                     } catch ( error ) {
                     }
 
-                    console.log( 'token response', response );
                     res.end( JSON.stringify( response ) );
                 } )
                 .catch( function ( err ) {
+                    console.log( 'token response err');
+                    console.log( err );
                     res.statusCode = err.statusCode;
                     res.end( JSON.stringify( err.error ) );
                 } );

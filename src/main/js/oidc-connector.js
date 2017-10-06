@@ -70,10 +70,11 @@
  * @memberOf BIDOIDCConnect
  */
 
-import Dialog from './component/dialog.component';
 import EVENT_CONSTANTS from './constants/event.constants';
 import CONNECTOR_CONSTANTS from './constants/connector.constants';
-import UtilHelper from './helper/util-helper.js';
+import XDM_CONSTANTS from './constants/xdm.constants';
+
+import Dialog from './component/dialog.component';
 import OIDCConfig from './config/oidc.config';
 import ConnectorConfig from './config/connector.config';
 
@@ -112,11 +113,14 @@ import ConnectorConfig from './config/connector.config';
     }
 
     function getAccessObject() {
-        const accessToken = ( window.sessionStorage.getItem( CONFIG.storage_key_access ) || '' ).split( ';' );
-        return {
-            accessToken: accessToken[0] || '',
-            tokenType: accessToken[1] || '',
-        };
+        const storedTokens = window.sessionStorage.getItem( CONFIG.storage_key_access ) || '' ;
+        try {
+            return JSON.parse( storedTokens );
+        } catch ( err ) {
+            console.error( err );
+            doClearStorage();
+            return {};
+        }
     }
 
     /**
@@ -160,7 +164,7 @@ import ConnectorConfig from './config/connector.config';
             login_hint.push( ':unsolicited:nodialog' );
         } else if ( unsolicited ) {
             login_hint.push( ':unsolicited' );
-        } else {
+        } else if ( userintent ) {
             login_hint.push( ':userintent' );
         }
 
@@ -219,7 +223,8 @@ import ConnectorConfig from './config/connector.config';
 
     function onLoad() {
         doPolyfill();
-        doReplaceConnectButton();
+        // TODO: Re-enable this when ready
+        // doReplaceConnectButton();
         doSendLoadedEvent();
     }
 
@@ -343,8 +348,6 @@ import ConnectorConfig from './config/connector.config';
         const connectButton = getConnectButton( id );
 
         function actionCallback( event ) {
-            console.log( 'doHandleXidPostMessage', 'message', event );
-
             let data = {};
             try {
                 data = JSON.parse( event.data ) || {};
@@ -358,35 +361,12 @@ import ConnectorConfig from './config/connector.config';
                     doLogin( { id, isIgnoreWindow: true } );
                     break;
                 }
-                case 'oauth-action': {
-                    // Show dialog if any other action than callback
-                    if ( xIdLoginModal && data.action !== 'callback' ) {
-                        xIdLoginModal.showDialog();
-                    }
-
-                    if ( onActionCallback ) {
-                        onActionCallback( data.action );
-                    }
-                    break;
-                }
-                case 'xid-token': {
-                    console.log( 'doToken', data );
+                case XDM_CONSTANTS.BID_RESPONSE_DATA_RECEIVED_XDM_EVENT: {
                     if ( loginWindow ) {
                         loginWindow.close();
                     }
                     if ( xIdLoginModal ) {
                         xIdLoginModal.hideDialog();
-                    }
-
-                    if ( !callback && !!connectButton ) {
-                        callback = ( err ) => {
-                            if ( err ) {
-                                doSendUserEvent( id, err );
-                            }
-                            else {
-                                doGetUserInfo( ( err, user ) => doSendUserEvent( id, err, user || null ) );
-                            }
-                        };
                     }
 
                     if ( inlineElement ) {
@@ -403,107 +383,14 @@ import ConnectorConfig from './config/connector.config';
                         }
                     }
                     else {
-                        doStoreUserAccessToken( data );
-                        doSendConnectEvent( id, null, data );
+                        doStoreUserAccessToken( data.data );
+                        doSendConnectEvent( id, null, data.data );
 
-                        if ( callback ) {
-                            callback( null, data.params );
-                        }
-                    }
-                    element.removeEventListener( 'message', actionCallback );
-                    break;
-                }
-                case 'xid-id-token': {
-                    console.log( 'idTokenReceived:', data );
-                    if ( loginWindow ) {
-                        loginWindow.close();
-                    }
-                    if ( xIdLoginModal ) {
-                        xIdLoginModal.hideDialog();
-                    }
-
-                    if ( !callback && !!connectButton ) {
-                        callback = ( err ) => {
-                            if ( err ) {
-                                doSendUserEvent( id, err );
-                            }
-                            else {
-                                doGetUserInfo( ( err, user ) => doSendUserEvent( id, err, user || null ) );
-                            }
-                        }
-                    }
-
-                    if ( inlineElement ) {
-                        // Reset inline element
-                        inlineElement.innerHTML = '';
-                    }
-
-                    if ( data.error ) {
-                        doLogout();
-                        doSendConnectEvent( id, data.error );
-
-                        if ( callback ) {
-                            callback( { error: data.error } );
-                        }
-                    }
-                    else {
                         if ( callback ) {
                             callback( null, data.data );
                         }
                     }
-
-                    element.removeEventListener( 'message', actionCallback );
-                    break;
-                }
-                case 'xid-error': {
-                    if ( loginWindow ) {
-                        loginWindow.close();
-                    }
-                    if ( xIdLoginModal ) {
-                        xIdLoginModal.hideDialog();
-                    }
-
-                    console.error( 'Received error: ' + data.error );
-
-                    if ( inlineElement ) {
-                        // Reset inline element
-                        inlineElement.innerHTML = '';
-                    }
-
-                    if ( callback ) {
-                        callback( { error: data.error } );
-                    }
-                    element.removeEventListener( 'message', actionCallback );
-                    break;
-                }
-                case 'xid-code': {
-                    if ( loginWindow ) {
-                        loginWindow.close();
-                    }
-                    if ( xIdLoginModal ) {
-                        xIdLoginModal.hideDialog();
-                    }
-
-                    if ( !callback && !!connectButton ) {
-                        callback = ( err ) => {
-                            if ( err ) {
-                                doSendUserEvent( id, err );
-                            }
-                            else {
-                                doGetUserInfo( ( err, user ) => doSendUserEvent( id, err, user || null ) );
-                            }
-                        };
-                    }
-
-                    if ( inlineElement ) {
-                        // Reset inline element
-                        inlineElement.innerHTML = '';
-                    }
-
-                    if ( config.response_type === 'code' ) {
-                        doAuthenticateCode( id, data.code, callback );
-                    }
-                    element.removeEventListener( 'message', actionCallback );
+                    // element.removeEventListener( 'message', actionCallback );
                     break;
                 }
             }
@@ -565,11 +452,16 @@ import ConnectorConfig from './config/connector.config';
      * @param {BIDOIDCConnect.TokenResult} tokenResult
      */
     function doStoreUserAccessToken( tokenResult ) {
-        window.sessionStorage.setItem( CONFIG.storage_key_access, [tokenResult.access_token, tokenResult.token_type].join( ';' ) );
+        window.sessionStorage.setItem( CONFIG.storage_key_access, JSON.stringify( tokenResult ) );
     }
 
     function doAuthenticateCode( id, code, callback ) {
         console.log( 'doAuthenticateCode', CONFIG.grant_type, code );
+
+        if ( !CONFIG.token_url ) {
+            callback( { code: code } );
+        }
+
         doAjax( CONFIG.token_url, {
             'client_id': CLIENT_CONFIG.client_id,
             'grant_type': CONFIG.grant_type,
@@ -619,7 +511,7 @@ import ConnectorConfig from './config/connector.config';
      * @param {HTMLElement} [inlineElementID]
      * @param {Boolean} [inlineModalWindow]
      */
-    function doConnect(  {callback, config, onActionCallback, inlineOnLoadCallback, inlineElementID, inlineModalWindow } ) {
+    function doConnect(  { callback, config, onActionCallback, inlineOnLoadCallback, inlineElementID, inlineModalWindow } ) {
         _doConnect( {
             callback: callback,
             config: config,
@@ -648,7 +540,8 @@ import ConnectorConfig from './config/connector.config';
         }
 
         if ( isConnected() ) {
-            callback( null, true );
+            console.log( 'doConnect - already logged in' );
+            callback( null, getAccessObject() );
             return;
         }
 
@@ -810,7 +703,10 @@ import ConnectorConfig from './config/connector.config';
     }
 
     function doLogout() {
-        console.log( 'doLogout' );
+        doClearStorage();
+    }
+
+    function doClearStorage() {
         window.sessionStorage.removeItem( CONFIG.storage_key_access );
     }
 
