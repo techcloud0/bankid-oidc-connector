@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            white-space: nowrap;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+
+        *:focus {
+            outline: none;
+            outline-offset: -2px;
+            border: none;
+            box-shadow: 0 0 0 2px #008fd4;
+        }
+
+        *::-moz-focus-inner {
+            border: 0;
+        }
+
+        button {
+            margin: 1px;
+            padding: 0;
+            border: none;
+            height: 40px;
+            width: 240px;
+            white-space: nowrap;
+            line-height: 40px;
+            font-size: 14px;
+            border-radius: 3px;
+            color: white;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset, 0 1px 1px 1px rgba(0, 0, 0, 0.1);
+            transition: opacity 150ms ease-in-out;
+            background: #22882C none;
+        }
+
+        button:not(:disabled) {
+            cursor: pointer;
+        }
+
+        button:disabled,
+        button:not(.active) {
+            opacity: 0.7;
+            background-color: #4A6EC3;
+        }
+
+        button img {
+            width: 22px;
+            z-index: 1;
+            transform: translate(0, 0);
+            vertical-align: middle;
+        }
+
+        button .text {
+            display: inline-block;
+            text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+
+<button>
+    <span class="button text">Logg inn med xID</span>
+</button>
+
+<script type="text/javascript">
+    var buttonElement = document.querySelector( 'button' );
+    var authorizeUrl;
+    var method;
+    var loginWindow;
+
+    function onButtonClick() {
+        if ( method === 'window' ) {
+            doOpenAuthorizeWindow();
+        }
+
+        window.postMessage( JSON.stringify( {
+            type: 'click'
+        } ), '*' );
+    }
+
+    function onPostMessage( event ) {
+        var data;
+
+        try {
+            data = JSON.parse( event.data ) || {};
+        } catch ( e ) {
+            data = {};
+        }
+
+        switch ( data.type ) {
+            case 'init':
+                doInitButton( data.data );
+                break;
+            case 'xid-code':
+            case 'xid-error':
+                if ( loginWindow ) {
+                    loginWindow.close();
+                }
+                break;
+        }
+    }
+
+    /**
+     * @param {Object} data
+     * @param {String} data.id
+     * @param {String} data.text
+     * @param {String} data.method
+     * @param {String} data.authorizeUrl
+     */
+    function doInitButton( data ) {
+        method = data.method;
+        authorizeUrl = data.authorizeUrl;
+
+        buttonElement.classList.add( 'active' );
+        document.querySelector( 'span.text' ).innerText = data.text || 'Logg inn med xID';
+    }
+
+    function doOpenAuthorizeWindow() {
+        const windowWidth = 500;
+        const windowHeight = 500;
+        const windowLeft = window.top.outerWidth / 2 + window.top.screenX - (windowWidth / 2);
+        const windowTop = window.top.outerHeight / 2 + window.top.screenY - (windowHeight / 2);
+
+        loginWindow = window.open( authorizeUrl, 'login', [
+            'toolbar=no',
+            'location=no',
+            'status=no',
+            'menubar=no',
+            'scrollbars=yes',
+            'resizable=yes',
+            `width=${windowWidth}px`,
+            `height=${windowHeight}px`,
+            `left=${windowLeft}`,
+            `top=${windowTop}`
+        ].join( ',' ) );
+    }
+
+    window.addEventListener( `message`, onPostMessage, false );
+    buttonElement.addEventListener( 'click', onButtonClick, false );
+</script>
+
+</body>
+
+</html>

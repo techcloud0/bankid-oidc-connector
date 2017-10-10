@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            white-space: nowrap;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+
+        *:focus {
+            outline: none;
+            outline-offset: -2px;
+            border: none;
+            box-shadow: 0 0 0 2px #008fd4;
+        }
+
+        *::-moz-focus-inner {
+            border: 0;
+        }
+
+        button {
+            margin: 1px;
+            padding: 0;
+            border: none;
+            height: 40px;
+            width: 240px;
+            white-space: nowrap;
+            line-height: 40px;
+            font-size: 14px;
+            border-radius: 3px;
+            color: white;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset, 0 1px 1px 1px rgba(0, 0, 0, 0.1);
+            transition: opacity 150ms ease-in-out;
+            background: rgb(74, 110, 158) none;
+        }
+
+        button:not(:disabled) {
+            cursor: pointer;
+        }
+
+        button:disabled,
+        button:not(.active) {
+            opacity: 0.7;
+            background-color: #4A6EC3;
+        }
+
+        button img {
+            width: 22px;
+            z-index: 1;
+            transform: translate(0, 0);
+        }
+
+        button .image {
+            text-align: center;
+            width: 40px;
+            height: 40px;
+            display: inline-block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        button .image:after {
+            content: " ";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            width: 1px;
+            background-color: rgba(0, 0, 0, 0.2);
+            box-shadow: 1px 0 0 rgba(255, 255, 255, 0.1);
+        }
+
+        button img {
+            vertical-align: middle;
+        }
+
+        button .text {
+            display: inline-block;
+            /*padding-left: 10px;
+             margin-left: 40px;*/
+            text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+
+<button>
+    <span class="image">
+        <img alt=""
+             src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIiIGhlaWdodD0iMTQiIHZpZXdCb3g9IjAgMCAyMiAxNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+R3JvdXA8L3RpdGxlPjxnIGZpbGwtcnVsZT0ibm9uemVybyIgZmlsbD0iI0ZGRiI+PHBhdGggZD0iTTUuNDI4IDE0SC41NzJjLS4zMTUgMC0uNTcxLS4yMzYtLjU3MS0uNTI5di0uOTQzYzAtLjI5MS4yNTYtLjUyOC41NzEtLjUyOGg0Ljg1N2MuMzE1LS4wMDEuNTcxLjIzNi41NzEuNTI3di45NDNjLS4wMDEuMjk0LS4yNTYuNTMtLjU3Mi41M00yMS40MjkgMTRoLTQuODU3Yy0uMzE1IDAtLjU3MS0uMjM2LS41NzEtLjUyOXYtLjk0M2MwLS4yOTEuMjU2LS41MjguNTcxLS41MjhoNC44NTdjLjMxNSAwIC41NzEuMjM3LjU3MS41Mjh2Ljk0M2MwIC4yOTMtLjI1Ni41MjktLjU3MS41MjlNMTMuNDMgNkg4LjU3MWMtLjMxNSAwLS41Ny0uMjM2LS41Ny0uNTI4di0uOTQzYzAtLjI5Mi4yNTYtLjUyOS41Ny0uNTI5aDQuODU5Yy4zMTUgMCAuNTcuMjM3LjU3LjUyOXYuOTQyYzAgLjI5Mi0uMjU1LjUyOS0uNTcuNTI5TTIxLjQyOSA2aC00Ljg1N2MtLjMxNSAwLS41NzEtLjIzNi0uNTcxLS41Mjh2LS45NDNjMC0uMjkyLjI1Ni0uNTI5LjU3MS0uNTI5aDQuODU3Yy4zMTUgMCAuNTcxLjIzNy41NzEuNTI5di45NDJjMCAuMjkyLS4yNTYuNTI5LS41NzEuNTI5TTUuNDI4IDJILjU3MmMtLjMxNSAwLS41NzEtLjIzNy0uNTcxLS41MjhWLjUyOEMuMDAxLjIzNi4yNTcgMCAuNTcyIDBoNC44NTdDNS43NDQgMCA2IC4yMzYgNiAuNTI4di45NDRjLS4wMDEuMjkxLS4yNTYuNTI4LS41NzIuNTI4TTIxLjQyOSAyaC00Ljg1N2MtLjMxNSAwLS41NzEtLjIzNy0uNTcxLS41MjhWLjUyOGMwLS4yOTIuMjU2LS41MjguNTcxLS41MjhoNC44NTdjLjMxNSAwIC41NzEuMjM2LjU3MS41Mjh2Ljk0NGMwIC4yOTEtLjI1Ni41MjgtLjU3MS41MjhNNS40MjggMTBILjU3MmMtLjMxNSAwLS41NzEtLjIzNi0uNTcxLS41Mjd2LS45NDVDLjAwMSA4LjIzNi4yNTcgOCAuNTcyIDhoNC44NTdjLjMxNSAwIC41NzEuMjM2LjU3MS41Mjd2Ljk0NWMtLjAwMS4yOTItLjI1Ni41MjgtLjU3Mi41MjhNMTMuNDMgMTBIOC41NzFjLS4zMTUgMC0uNTctLjIzNi0uNTctLjUyN3YtLjk0NWMwLS4yOTEuMjU2LS41MjcuNTctLjUyN2g0Ljg1OWMuMzE1IDAgLjU3LjIzNi41Ny41Mjd2Ljk0NWMwIC4yOTEtLjI1NS41MjctLjU3LjUyNyIvPjwvZz48L3N2Zz4="/>
+    </span>
+    <span class="button text">Logg inn med BankID</span>
+</button>
+
+<script type="text/javascript">
+    var buttonElement = document.querySelector( 'button' );
+    var authorizeUrl;
+    var method;
+    var loginWindow;
+
+    function onButtonClick() {
+        if ( method === 'window' ) {
+            doOpenAuthorizeWindow();
+        }
+
+        window.postMessage( JSON.stringify( {
+            type: 'click'
+        } ), '*' );
+    }
+
+    function onPostMessage( event ) {
+        var data;
+
+        try {
+            data = JSON.parse( event.data ) || {};
+        } catch ( e ) {
+            data = {};
+        }
+
+        switch ( data.type ) {
+            case 'init':
+                doInitButton( data.data );
+                break;
+            case 'xid-code':
+            case 'xid-error':
+                if ( loginWindow ) {
+                    loginWindow.close();
+                }
+                break;
+        }
+    }
+
+    /**
+     * @param {Object} data
+     * @param {String} data.id
+     * @param {String} data.text
+     * @param {String} data.method
+     * @param {String} data.authorizeUrl
+     */
+    function doInitButton( data ) {
+        method = data.method;
+        authorizeUrl = data.authorizeUrl;
+
+        buttonElement.classList.add( 'active' );
+        document.querySelector( 'span.text' ).innerText = data.text || 'Logg inn med xID';
+    }
+
+    function doOpenAuthorizeWindow() {
+        const windowWidth = 500;
+        const windowHeight = 500;
+        const windowLeft = window.top.outerWidth / 2 + window.top.screenX - (windowWidth / 2);
+        const windowTop = window.top.outerHeight / 2 + window.top.screenY - (windowHeight / 2);
+
+        loginWindow = window.open( authorizeUrl, 'login', [
+            'toolbar=no',
+            'location=no',
+            'status=no',
+            'menubar=no',
+            'scrollbars=yes',
+            'resizable=yes',
+            `width=${windowWidth}px`,
+            `height=${windowHeight}px`,
+            `left=${windowLeft}`,
+            `top=${windowTop}`
+        ].join( ',' ) );
+    }
+
+    window.addEventListener( `message`, onPostMessage, false );
+    buttonElement.addEventListener( 'click', onButtonClick, false );
+</script>
+
+</body>
+
+</html>
