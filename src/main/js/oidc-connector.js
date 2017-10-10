@@ -87,7 +87,7 @@ import ConnectorConfig from './config/connector.config';
         ui_locales: 'nb',
         client_type: '',
         user_profile: '',
-        acr_values: '',
+        acr_values: '4',
         nonce: createRandom(),
         state: 'untouched',
         login_hint: '',
@@ -100,6 +100,7 @@ import ConnectorConfig from './config/connector.config';
         grant_type: 'authorization_code',
         userinfo_url: '',
         token_url: '',
+        devMode: false // Set this to true if you need to set application_name manually
     } );
     /**
      * @type {{id: {BIDOIDCConnect.ConnectButton}}}
@@ -849,6 +850,11 @@ import ConnectorConfig from './config/connector.config';
         CLIENT_CONFIG.ui_locales = config.ui_locales || CLIENT_CONFIG.ui_locales;
         CLIENT_CONFIG.acr_values = config.acr_values || CLIENT_CONFIG.acr_values;
         CLIENT_CONFIG.nonce = config.nonce || CLIENT_CONFIG.nonce;
+
+        if ( config.devMode ) {
+            CLIENT_CONFIG.application_name = "Testclient";
+        }
+
         Object.assign( CLIENT_CONFIG, createClientConfig( null, config ) );
         console.log( 'doInit', CLIENT_CONFIG );
         console.log( 'doInit', CONFIG );

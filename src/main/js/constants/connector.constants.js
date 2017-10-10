@@ -13,6 +13,7 @@ export default {
         'prompt',
         'acr_values',
         'grant_type',
-        'code'
+        'code',
+        'application_name'
     ]
 };
