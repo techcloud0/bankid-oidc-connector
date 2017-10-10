@@ -588,7 +588,7 @@ import ConnectorConfig from './config/connector.config';
                 break;
             }
             case 'redirect': {
-                document.location.href = authorizeUrl;
+                window.location.assign( authorizeUrl );
                 break;
             }
             case 'inline': {
