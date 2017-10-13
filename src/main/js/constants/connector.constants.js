@@ -14,6 +14,7 @@ export default {
         'acr_values',
         'grant_type',
         'code',
-        'application_name'
+        'application_name',
+        'merchant_name'
     ]
 };
