@@ -138,10 +138,6 @@ import ConnectorConfig from './config/connector.config';
     }
 
     function createLoginHintFromConfig( config ) {
-        if ( config.login_hint ) {
-            return config.login_hint;
-        }
-
         const clientType = typeof config.client_type !== 'undefined' ? config.client_type : '';
         const userProfile = typeof config.user_profile !== 'undefined' ? config.user_profile : '';
         const unsolicited = typeof config.unsolicited !== 'undefined' ? config.unsolicited : '';
@@ -546,7 +542,7 @@ import ConnectorConfig from './config/connector.config';
         }
 
         const clientConfig = createClientConfig( id, config );
-        clientConfig.login_hint = createLoginHintFromConfig( clientConfig );
+        clientConfig.login_hint = config.login_hint || createLoginHintFromConfig( clientConfig );
 
         console.log( 'doConnect', clientConfig );
         const authorizeUrl = createAuthorizeClientUrl( clientConfig );
@@ -733,7 +729,7 @@ import ConnectorConfig from './config/connector.config';
             return console.error( 'doInit missing client id' );
         }
 
-        CLIENT_CONFIG.login_hint = createLoginHintFromConfig( config );
+        CLIENT_CONFIG.login_hint = config.login_hint || createLoginHintFromConfig( config );
         CLIENT_CONFIG.client_id = config.client_id;
         CLIENT_CONFIG.scope = config.scope || CLIENT_CONFIG.scope;
         CLIENT_CONFIG.response_mode = config.response_mode || CLIENT_CONFIG.response_mode;
