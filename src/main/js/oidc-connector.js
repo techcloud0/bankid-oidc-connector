@@ -757,7 +757,8 @@ import ConnectorConfig from './config/connector.config';
         doConnect: doConnect,
         doInit: doInit,
         doLogout: doLogout,
-        doGetUserInfo: doGetUserInfo
+        doGetUserInfo: doGetUserInfo,
+        isConnected: isConnected
     };
 
     // TODO Refactor to xID specific part
