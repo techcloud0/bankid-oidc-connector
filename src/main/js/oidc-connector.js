@@ -154,6 +154,13 @@ import ConnectorConfig from './config/connector.config';
 
     function getUpdatedClientConfig( id, override_config = {} ) {
         const config = {};
+        if ( id ) {
+            const connectButton = getConnectButton( id );
+
+            if ( connectButton ) {
+                config.scope = connectButton.button.getAttribute( 'scope' ) || CLIENT_CONFIG.scope;
+            }
+        }
         return Object.assign( config, CLIENT_CONFIG, override_config );
         // FIXME Reenable and refactor when buttons are back
         // if ( id ) {
@@ -200,7 +207,7 @@ import ConnectorConfig from './config/connector.config';
     function onLoad() {
         doPolyfill();
         // TODO: Re-enable this when ready
-        // doReplaceConnectButton();
+        doReplaceConnectButton();
         doSendLoadedEvent();
     }
 
@@ -321,7 +328,7 @@ import ConnectorConfig from './config/connector.config';
      * @param {BIDOIDCConnect.Configuration} config
      */
     function doHandleXidPostMessage( { element, loginWindow, id, callback, once, inlineElement = null, xIdLoginModal = null, config = {} } ) {
-        const connectButton = getConnectButton( id );
+        // const connectButton = getConnectButton( id );
 
         function actionCallback( event ) {
             let data = {};
@@ -370,6 +377,12 @@ import ConnectorConfig from './config/connector.config';
                         element.removeEventListener( 'message', actionCallback );
                     }
                     break;
+                }
+                default: {
+                    // Show dialog if any other action than callback
+                    if ( xIdLoginModal ) {
+                        xIdLoginModal.showDialog();
+                    }
                 }
             }
         }
@@ -492,7 +505,7 @@ import ConnectorConfig from './config/connector.config';
      * @param {Boolean} [inlineModalWindow]
      * @private
      */
-    function _doConnect( { callback, config, id, inlineElementID, inlineOnLoadCallback, isIgnoreWindow, inlineModalWindow } ) {
+    function _doConnect( { callback, config = {}, id, inlineElementID, inlineOnLoadCallback, isIgnoreWindow, inlineModalWindow } ) {
         if ( !callback ) {
             return console.error( 'doConnect missing callback!' );
         }
@@ -578,6 +591,11 @@ import ConnectorConfig from './config/connector.config';
                     xIdLoginModal: xIdLoginModal,
                     config: clientConfig
                 } );
+
+                // Show dialog if any other action than callback
+                if ( clientConfig.login_hint.indexOf( ':unsolicited:nodialog' ) === -1 ) {
+                    xIdLoginModal.showDialog();
+                }
                 break;
             }
         }

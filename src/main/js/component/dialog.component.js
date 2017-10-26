@@ -35,7 +35,7 @@ export default class Dialog {
     onGlobalEvent( event ) {
         const isCloseByMouse = event.type === 'click' && !this.dialogMainElement.contains( event.target ) && this.dialogMainElement !== event.target;
         const isCloseByKeyboard = event.which === 27; // ESC key
-        const isCloseByMouseOrKeyboard = !this.options.isModal && (isCloseByMouse || isCloseByKeyboard);
+        const isCloseByMouseOrKeyboard = !this.options.isModal && ( isCloseByMouse || isCloseByKeyboard );
 
         if ( isCloseByMouseOrKeyboard ) {
             setTimeout( this.hideDialog.bind( this ), 1 );
