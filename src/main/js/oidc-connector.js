@@ -167,23 +167,18 @@ import ConnectorConfig from './config/connector.config';
         return login_hint.join( '' );
     }
 
-    function createClientConfig( id, override_config = {} ) {
-        const config = override_config;
-
-        if ( id ) {
-            const connectButton = getConnectButton( id );
-
-            if ( connectButton ) {
-                config.scope = connectButton.button.getAttribute( 'scope' ) || CLIENT_CONFIG.scope;
-            }
-        }
-
-        Object.keys( CLIENT_CONFIG ).forEach( key => {
-            if ( !( key in config ) ) {
-                config[key] = CLIENT_CONFIG[key];
-            }
-        } );
-        return config;
+    function getUpdatedClientConfig( id, override_config = {} ) {
+        const config = {};
+        return Object.assign( config, CLIENT_CONFIG, override_config );
+        // FIXME Reenable and refactor when buttons are back
+        // if ( id ) {
+        //     const connectButton = getConnectButton( id );
+        //
+        //     if ( connectButton ) {
+        //         config.scope = connectButton.button.getAttribute( 'scope' ) || CLIENT_CONFIG.scope;
+        //     }
+        // }
+        // return config;
     }
 
     function createConnectButtonIframeElement( connectButtonElement ) {
@@ -249,6 +244,7 @@ import ConnectorConfig from './config/connector.config';
 
     function doSendLoadedEvent() {
         document.body.dispatchEvent( new window.CustomEvent( EVENT_CONSTANTS.LOADED_EVENT ) );
+        document.body.dispatchEvent( new window.CustomEvent( EVENT_CONSTANTS.XID_LOADED_EVENT ) );
     }
 
     /**
@@ -296,7 +292,7 @@ import ConnectorConfig from './config/connector.config';
         // const type = connectButton.button.getAttribute( 'type' ) || 'login';
         // const scope = connectButton.button.getAttribute( 'scope' ) || CLIENT_CONFIG.scope;
 
-        const config = createClientConfig( id );
+        const config = getUpdatedClientConfig( id );
         doSetConnectButtonIframeSize( connectButton.iframe );
         connectButton.iframe.contentWindow.postMessage( JSON.stringify( {
             type: 'init',
@@ -357,6 +353,7 @@ import ConnectorConfig from './config/connector.config';
                     doLogin( { id, isIgnoreWindow: true } );
                     break;
                 }
+                case XDM_CONSTANTS.BID_ERROR_RECEIVED_XDM_EVENT:
                 case XDM_CONSTANTS.BID_RESPONSE_DATA_RECEIVED_XDM_EVENT: {
                     if ( loginWindow ) {
                         loginWindow.close();
@@ -386,13 +383,12 @@ import ConnectorConfig from './config/connector.config';
                             callback( null, data.data );
                         }
                     }
-                    // element.removeEventListener( 'message', actionCallback );
+                    element.removeEventListener( 'message', actionCallback );
                     break;
                 }
             }
         }
-
-        element.addEventListener( 'message', actionCallback, false );
+        element.addEventListener( 'message', actionCallback );
     }
 
     function doReplaceConnectButton() {
@@ -507,7 +503,7 @@ import ConnectorConfig from './config/connector.config';
      * @param {HTMLElement} [inlineElementID]
      * @param {Boolean} [inlineModalWindow]
      */
-    function doConnect(  { callback, config, onActionCallback, inlineOnLoadCallback, inlineElementID, inlineModalWindow } ) {
+    function doConnect(  { callback=null, config={}, onActionCallback=null, inlineOnLoadCallback=null, inlineElementID=null, inlineModalWindow=null } ) {
         _doConnect( {
             callback: callback,
             config: config,
@@ -541,8 +537,8 @@ import ConnectorConfig from './config/connector.config';
             return;
         }
 
-        const clientConfig = createClientConfig( id, config );
-        clientConfig.login_hint = config.login_hint || createLoginHintFromConfig( clientConfig );
+        const clientConfig = getUpdatedClientConfig( id, config );
+        clientConfig.login_hint = 'login_hint' in config ? config.login_hint : createLoginHintFromConfig( clientConfig );
 
         console.log( 'doConnect', clientConfig );
         const authorizeUrl = createAuthorizeClientUrl( clientConfig );
@@ -709,7 +705,7 @@ import ConnectorConfig from './config/connector.config';
     /**
      * @param {BIDOIDCConnect.Configuration} config
      */
-    function doInit( config ) {
+    function doInit( config={} ) {
         if ( !config ) {
             return console.error( ' doInit missing config object' );
         }
@@ -741,10 +737,10 @@ import ConnectorConfig from './config/connector.config';
         CLIENT_CONFIG.nonce = config.nonce || CLIENT_CONFIG.nonce;
 
         if ( config.devMode ) {
-            CLIENT_CONFIG.application_name = "Testclient";
+            CLIENT_CONFIG.application_name = 'Testclient';
         }
 
-        Object.assign( CLIENT_CONFIG, createClientConfig( null, config ) );
+        Object.assign( CLIENT_CONFIG, config );
         console.log( 'doInit', CLIENT_CONFIG );
         console.log( 'doInit', CONFIG );
     }
