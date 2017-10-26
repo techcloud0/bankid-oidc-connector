@@ -108,21 +108,6 @@ import ConnectorConfig from './config/connector.config';
      */
     const connectButtons = {};
 
-    function isConnected() {
-        return !!window.sessionStorage.getItem( CONFIG.storage_key_access );
-    }
-
-    function getAccessObject() {
-        const storedTokens = window.sessionStorage.getItem( CONFIG.storage_key_access ) || '' ;
-        try {
-            return JSON.parse( storedTokens );
-        } catch ( err ) {
-            console.error( err );
-            doClearStorage();
-            return {};
-        }
-    }
-
     /**
      * @param {String} id
      * @returns {BIDOIDCConnect.ConnectButton}
@@ -331,12 +316,11 @@ import ConnectorConfig from './config/connector.config';
      * @param id
      * @param callback
      * @param once
-     * @param onActionCallback
      * @param inlineElement
      * @param xIdLoginModal
      * @param {BIDOIDCConnect.Configuration} config
      */
-    function doHandleXidPostMessage( { element, loginWindow, id, callback, once, onActionCallback, inlineElement = null, xIdLoginModal = null, config = {} } ) {
+    function doHandleXidPostMessage( { element, loginWindow, id, callback, once, inlineElement = null, xIdLoginModal = null, config = {} } ) {
         const connectButton = getConnectButton( id );
 
         function actionCallback( event ) {
@@ -368,7 +352,6 @@ import ConnectorConfig from './config/connector.config';
                     }
 
                     if ( data.error ) {
-                        doLogout();
                         doSendConnectEvent( id, data.error );
 
                         if ( callback ) {
@@ -376,14 +359,16 @@ import ConnectorConfig from './config/connector.config';
                         }
                     }
                     else {
-                        doStoreUserAccessToken( data.data );
                         doSendConnectEvent( id, null, data.data );
-
-                        if ( callback ) {
+                        if ( CONFIG.token_url && CLIENT_CONFIG.response_type === 'code' && data.data.code !== undefined ) {
+                            doAuthenticateCode( id, data.data.code, callback );
+                        } else if ( callback ) {
                             callback( null, data.data );
                         }
                     }
-                    element.removeEventListener( 'message', actionCallback );
+                    if ( once ) {
+                        element.removeEventListener( 'message', actionCallback );
+                    }
                     break;
                 }
             }
@@ -404,9 +389,9 @@ import ConnectorConfig from './config/connector.config';
      * @param {String} url
      * @param {Object} data
      * @param {Function} callback
-     * @param {Object} headers
+     * @param {Array} headers (optional)
      */
-    function doAjax( url, data, callback, headers ) {
+    function doAjax( url, data, callback, headers = [] ) {
         const dataForm = objectToURL( data );
 
         const xhr = new window.XMLHttpRequest();
@@ -440,20 +425,7 @@ import ConnectorConfig from './config/connector.config';
         xhr.send( dataForm );
     }
 
-    /**
-     * @param {BIDOIDCConnect.TokenResult} tokenResult
-     */
-    function doStoreUserAccessToken( tokenResult ) {
-        window.sessionStorage.setItem( CONFIG.storage_key_access, JSON.stringify( tokenResult ) );
-    }
-
     function doAuthenticateCode( id, code, callback ) {
-        console.log( 'doAuthenticateCode', CONFIG.grant_type, code );
-
-        if ( !CONFIG.token_url ) {
-            callback( { code: code } );
-        }
-
         doAjax( CONFIG.token_url, {
             'client_id': CLIENT_CONFIG.client_id,
             'grant_type': CONFIG.grant_type,
@@ -461,7 +433,6 @@ import ConnectorConfig from './config/connector.config';
             'redirect_uri': CLIENT_CONFIG.redirect_uri
         }, ( err, result ) => {
             if ( err ) {
-                doLogout();
                 doSendConnectEvent( id, err );
 
                 if ( callback ) {
@@ -470,7 +441,6 @@ import ConnectorConfig from './config/connector.config';
             }
             else {
                 if ( result['error'] ) {
-                    doLogout();
                     doSendConnectEvent( id, result['error'] );
 
                     if ( callback ) {
@@ -478,7 +448,6 @@ import ConnectorConfig from './config/connector.config';
                     }
                 }
                 else {
-                    doStoreUserAccessToken( result );
                     doSendConnectEvent( id, null, result );
 
                     if ( callback ) {
@@ -498,16 +467,14 @@ import ConnectorConfig from './config/connector.config';
      * Public doConnect API function for starting a xID login session.
      * @param {Function} [callback]
      * @param {BIDOIDCConnect.Configuration} [config]
-     * @param {Function} [onActionCallback]
      * @param {Function} [inlineOnLoadCallback]
      * @param {HTMLElement} [inlineElementID]
      * @param {Boolean} [inlineModalWindow]
      */
-    function doConnect(  { callback=null, config={}, onActionCallback=null, inlineOnLoadCallback=null, inlineElementID=null, inlineModalWindow=null } ) {
+    function doConnect(  { callback=null, config={}, inlineOnLoadCallback=null, inlineElementID=null, inlineModalWindow=null } ) {
         _doConnect( {
             callback: callback,
             config: config,
-            onActionCallback: onActionCallback,
             inlineElementID: inlineElementID,
             inlineOnLoadCallback: inlineOnLoadCallback,
             inlineModalWindow: inlineModalWindow
@@ -519,28 +486,19 @@ import ConnectorConfig from './config/connector.config';
      * @param {Function} [callback]
      * @param {BIDOIDCConnect.Configuration} [config]
      * @param {Function} [inlineOnLoadCallback]
-     * @param {Function} [onActionCallback]
      * @param {String} id
      * @param {String} inlineElementID
      * @param {Boolean} [isIgnoreWindow]
      * @param {Boolean} [inlineModalWindow]
      * @private
      */
-    function _doConnect( { callback, config, id, inlineElementID, inlineOnLoadCallback, onActionCallback, isIgnoreWindow, inlineModalWindow } ) {
+    function _doConnect( { callback, config, id, inlineElementID, inlineOnLoadCallback, isIgnoreWindow, inlineModalWindow } ) {
         if ( !callback ) {
-            return console.error( 'doConnect missing callback' );
-        }
-
-        if ( isConnected() ) {
-            console.log( 'doConnect - already logged in' );
-            callback( null, getAccessObject() );
-            return;
+            return console.error( 'doConnect missing callback!' );
         }
 
         const clientConfig = getUpdatedClientConfig( id, config );
         clientConfig.login_hint = 'login_hint' in config ? config.login_hint : createLoginHintFromConfig( clientConfig );
-
-        console.log( 'doConnect', clientConfig );
         const authorizeUrl = createAuthorizeClientUrl( clientConfig );
 
         const method = ( config && config.method ) ? config.method : CONFIG.method;
@@ -571,9 +529,8 @@ import ConnectorConfig from './config/connector.config';
                         element: context,
                         loginWindow: loginWindow,
                         id: id,
+                        once: true,
                         callback: callback,
-                        once: false,
-                        onActionCallback: onActionCallback,
                         config: clientConfig
                     } );
                 }
@@ -616,8 +573,7 @@ import ConnectorConfig from './config/connector.config';
                     loginWindow: null,
                     id: id,
                     callback: callback,
-                    once: false,
-                    onActionCallback: onActionCallback,
+                    once: true,
                     inlineElement: inlineElement,
                     xIdLoginModal: xIdLoginModal,
                     config: clientConfig
@@ -653,22 +609,17 @@ import ConnectorConfig from './config/connector.config';
      */
     function doGetUserInfo( callback, accessToken = null, tokenType = null, responseType = 'code' ) {
         if ( !callback ) {
-            return console.error( 'doGetUserInfo missing callback' );
+            return console.error( 'doGetUserInfo missing callback!' );
         }
-
-        if ( !isConnected() ) {
-            callback( { error: 'User is not authorized' } );
-            return;
+        if ( !accessToken ) {
+            return console.error( 'doGetUserInfo missing accessToken!' );
+        }
+        if ( !tokenType ) {
+            return console.error( 'tokenType missing accessToken!' );
         }
 
         let headers = {};
         let data = {};
-
-        if ( !accessToken || !tokenType ) {
-            const accessObject = getAccessObject();
-            accessToken = accessObject.accessToken;
-            tokenType = accessObject.tokenType;
-        }
 
         if ( responseType === 'code' ) {
             data.access_token = accessToken;
@@ -679,12 +630,10 @@ import ConnectorConfig from './config/connector.config';
 
         doAjax( CONFIG.userinfo_url, data, ( err, result ) => {
             if ( err ) {
-                doLogout();
                 callback( err );
             }
             else {
                 if ( result['error'] ) {
-                    doLogout();
                     callback( { error: result['error'] } );
                 }
                 else {
@@ -692,14 +641,6 @@ import ConnectorConfig from './config/connector.config';
                 }
             }
         }, headers );
-    }
-
-    function doLogout() {
-        doClearStorage();
-    }
-
-    function doClearStorage() {
-        window.sessionStorage.removeItem( CONFIG.storage_key_access );
     }
 
     /**
@@ -746,11 +687,9 @@ import ConnectorConfig from './config/connector.config';
     }
 
     context.BID = {
-        doConnect: doConnect,
         doInit: doInit,
-        doLogout: doLogout,
-        doGetUserInfo: doGetUserInfo,
-        isConnected: isConnected
+        doConnect: doConnect,
+        doGetUserInfo: doGetUserInfo
     };
 
     // TODO Refactor to xID specific part
