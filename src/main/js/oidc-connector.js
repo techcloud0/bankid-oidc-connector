@@ -579,6 +579,11 @@ import ConnectorConfig from './config/connector.config';
                         { isModal: true }
                     );
                     xIdLoginModal.initDialog();
+
+                    // Show dialog if not unsolicited and nodialog
+                    if ( clientConfig.login_hint.indexOf( ':unsolicited:nodialog' ) === -1 ) {
+                        xIdLoginModal.showDialog();
+                    }
                 }
 
                 doHandleXidPostMessage( {
@@ -592,10 +597,6 @@ import ConnectorConfig from './config/connector.config';
                     config: clientConfig
                 } );
 
-                // Show dialog if any other action than callback
-                if ( clientConfig.login_hint.indexOf( ':unsolicited:nodialog' ) === -1 ) {
-                    xIdLoginModal.showDialog();
-                }
                 break;
             }
         }
