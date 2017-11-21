@@ -37,7 +37,7 @@ module.exports = function oauthMiddleware( req, res, next ) {
                     res.end( JSON.stringify( response ) );
                 } )
                 .catch( function ( err ) {
-                    console.log( 'token response err');
+                    console.log( 'token response err' );
                     res.statusCode = err.statusCode;
                     res.end( JSON.stringify( err.error ) );
                 } );
@@ -69,7 +69,7 @@ module.exports = function oauthMiddleware( req, res, next ) {
                     res.end( JSON.stringify( response ) );
                 } )
                 .catch( function ( err ) {
-                    console.log( 'token response err');
+                    console.log( 'token response err' );
                     console.log( err );
                     res.statusCode = err.statusCode;
                     res.end( JSON.stringify( err.error ) );

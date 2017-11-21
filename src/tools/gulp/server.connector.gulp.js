@@ -84,8 +84,8 @@ gulp.task( 'connector:server', () => {
             else {
                 const mimeType = mime.getType( filePath );
 
-                if (res.locals && res.locals.form_data) {
-                    result = result.replace(/{\w+}/g, JSON.stringify( res.locals.form_data ) );
+                if ( res.locals && res.locals.form_data ) {
+                    result = result.replace( /{\w+}/g, JSON.stringify( res.locals.form_data ) );
                 }
 
                 res.writeHead( 200, { 'Content-Type': mimeType } );

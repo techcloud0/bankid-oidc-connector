@@ -12,7 +12,7 @@ module.exports = function responseFormPost( req, res, next ) {
             if ( err ) {
                 console.warn( err );
             } else {
-                console.log(fields);
+                console.log( fields );
                 res['locals'].form_data = fields;
             }
             next();

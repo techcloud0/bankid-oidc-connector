@@ -103,6 +103,9 @@ import ConnectorConfig from './config/connector.config';
         token_url: '',
         devMode: false // Set this to true if you need to set application_name manually
     } );
+    const CONNECTOR_BUTTON_CONFIG = {
+        callback: null
+    };
     /**
      * @type {{id: {BIDOIDCConnect.ConnectButton}}}
      */
@@ -295,7 +298,7 @@ import ConnectorConfig from './config/connector.config';
                 method: CONFIG.method
             }
         } ), '*' );
-        doHandleXidPostMessage( { element: connectButton.iframe.contentWindow, id: id, once: false, config: config } );
+        doHandleXidPostMessage( { element: connectButton.iframe.contentWindow, id: id, callback: CONNECTOR_BUTTON_CONFIG.callback, once: false, config: config } );
     }
 
     function doSetConnectButtonIframeSize( iframeElement ) {
@@ -338,7 +341,6 @@ import ConnectorConfig from './config/connector.config';
             catch ( e ) {
                 // ignore
             }
-
             switch ( data.type ) {
                 case 'click': {
                     doLogin( { id, isIgnoreWindow: true } );
@@ -349,6 +351,7 @@ import ConnectorConfig from './config/connector.config';
                     if ( loginWindow ) {
                         loginWindow.close();
                     }
+                    
                     if ( xIdLoginModal ) {
                         xIdLoginModal.hideDialog();
                     }
@@ -411,6 +414,7 @@ import ConnectorConfig from './config/connector.config';
         xhr.withCredentials = true;
         xhr.addEventListener( 'load', () => {
             if ( xhr.readyState === xhr.DONE && xhr.status === 200 ) {
+            
                 try {
                     callback( null, JSON.parse( xhr.responseText ) || {} );
                 }
@@ -523,7 +527,6 @@ import ConnectorConfig from './config/connector.config';
                     const windowHeight = 500;
                     const windowLeft = window.top.outerWidth / 2 + window.top.screenX - ( windowWidth / 2 );
                     const windowTop = window.top.outerHeight / 2 + window.top.screenY - ( windowHeight / 2 );
-
                     loginWindow = window.open( authorizeUrl, 'login',
                         [
                             'toolbar=no',
@@ -695,6 +698,8 @@ import ConnectorConfig from './config/connector.config';
         CLIENT_CONFIG.ui_locales = config.ui_locales || CLIENT_CONFIG.ui_locales;
         CLIENT_CONFIG.acr_values = config.acr_values || CLIENT_CONFIG.acr_values;
         CLIENT_CONFIG.nonce = config.nonce || CLIENT_CONFIG.nonce;
+
+        CONNECTOR_BUTTON_CONFIG.callback = config.callback;
 
         if ( config.devMode ) {
             CLIENT_CONFIG.application_name = 'Testclient';
