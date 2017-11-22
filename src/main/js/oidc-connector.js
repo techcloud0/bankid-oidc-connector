@@ -7,19 +7,20 @@
  * @property {String} oauth_url
  * @property {String} method
  * @property {String} client_id
+ * @property {String} login_hint
  * @property {String} scope
  * @property {String} response_mode
  * @property {String} response_type
  * @property {String} grant_type
  * @property {String} redirect_uri
- * @property {String} client_type
- * @property {String} user_profile
  * @property {String} ui_locales
  * @property {String} acr_values
  * @property {String} state
  * @property {String} nonce
  * @property {String} userinfo_url
  * @property {String} token_url
+ * @property {String} id_token_hint
+ * @property {String} prompt
  * @memberOf BIDOIDCConnect
  */
 
@@ -86,8 +87,6 @@ import ConnectorConfig from './config/connector.config';
         response_type: 'code',
         redirect_uri: '',
         ui_locales: 'nb',
-        client_type: '',
-        user_profile: '',
         acr_values: '4',
         nonce: createRandom(),
         state: 'untouched',
@@ -125,36 +124,6 @@ import ConnectorConfig from './config/connector.config';
             .substring( 1 );
     }
 
-    function createLoginHintFromConfig( config ) {
-        const clientType = typeof config.client_type !== 'undefined' ? config.client_type : '';
-        const userProfile = typeof config.user_profile !== 'undefined' ? config.user_profile : '';
-        const unsolicited = typeof config.unsolicited !== 'undefined' ? config.unsolicited : '';
-        const noDialog = typeof config.noDialog !== 'undefined' ? config.noDialog : '';
-        const userintent = typeof config.userintent !== 'undefined' ? config.userintent : '';
-
-        const login_hint = [];
-        const allowedClientTypes = ['XID', 'BID', 'BIM', 'OBIM', 'DUMMY'];
-
-        if ( allowedClientTypes.indexOf( clientType.toUpperCase() ) !== -1 ) {
-            login_hint.push( clientType.toUpperCase() );
-        }
-
-        if ( userProfile ) {
-            login_hint.push( ':' + userProfile );
-        }
-
-        // TODO Refactor to xID specific part
-        if ( unsolicited && noDialog ) {
-            login_hint.push( ':unsolicited:nodialog' );
-        } else if ( unsolicited ) {
-            login_hint.push( ':unsolicited' );
-        } else if ( userintent ) {
-            login_hint.push( ':userintent' );
-        }
-
-        return login_hint.join( '' );
-    }
-
     function getUpdatedClientConfig( id, override_config = {} ) {
         const config = {};
         if ( id ) {
@@ -165,15 +134,6 @@ import ConnectorConfig from './config/connector.config';
             }
         }
         return Object.assign( config, CLIENT_CONFIG, override_config );
-        // FIXME Reenable and refactor when buttons are back
-        // if ( id ) {
-        //     const connectButton = getConnectButton( id );
-        //
-        //     if ( connectButton ) {
-        //         config.scope = connectButton.button.getAttribute( 'scope' ) || CLIENT_CONFIG.scope;
-        //     }
-        // }
-        // return config;
     }
 
     function createConnectButtonIframeElement( connectButtonElement ) {
@@ -298,7 +258,7 @@ import ConnectorConfig from './config/connector.config';
                 method: CONFIG.method
             }
         } ), '*' );
-        doHandleXidPostMessage( { element: connectButton.iframe.contentWindow, id: id, callback: CONNECTOR_BUTTON_CONFIG.callback, once: false, config: config } );
+        doHandleXidPostMessage( { element: connectButton.iframe.contentWindow, id: id, callback: CONNECTOR_BUTTON_CONFIG.callback, once: false } );
     }
 
     function doSetConnectButtonIframeSize( iframeElement ) {
@@ -328,9 +288,8 @@ import ConnectorConfig from './config/connector.config';
      * @param once
      * @param inlineElement
      * @param xIdLoginModal
-     * @param {BIDOIDCConnect.Configuration} config
      */
-    function doHandleXidPostMessage( { element, loginWindow, id, callback, once, inlineElement = null, xIdLoginModal = null, config = {} } ) {
+    function doHandleXidPostMessage( { element, loginWindow, id, callback, once, inlineElement = null, xIdLoginModal = null } ) {
         // const connectButton = getConnectButton( id );
 
         function actionCallback( event ) {
@@ -351,7 +310,7 @@ import ConnectorConfig from './config/connector.config';
                     if ( loginWindow ) {
                         loginWindow.close();
                     }
-                    
+
                     if ( xIdLoginModal ) {
                         xIdLoginModal.hideDialog();
                     }
@@ -414,7 +373,7 @@ import ConnectorConfig from './config/connector.config';
         xhr.withCredentials = true;
         xhr.addEventListener( 'load', () => {
             if ( xhr.readyState === xhr.DONE && xhr.status === 200 ) {
-            
+
                 try {
                     callback( null, JSON.parse( xhr.responseText ) || {} );
                 }
@@ -515,7 +474,6 @@ import ConnectorConfig from './config/connector.config';
         }
 
         const clientConfig = getUpdatedClientConfig( id, config );
-        clientConfig.login_hint = 'login_hint' in config ? config.login_hint : createLoginHintFromConfig( clientConfig );
         const authorizeUrl = createAuthorizeClientUrl( clientConfig );
 
         const method = ( config && config.method ) ? config.method : CONFIG.method;
@@ -546,8 +504,7 @@ import ConnectorConfig from './config/connector.config';
                         loginWindow: loginWindow,
                         id: id,
                         once: true,
-                        callback: callback,
-                        config: clientConfig
+                        callback: callback
                     } );
                 }
                 break;
@@ -596,8 +553,7 @@ import ConnectorConfig from './config/connector.config';
                     callback: callback,
                     once: true,
                     inlineElement: inlineElement,
-                    xIdLoginModal: xIdLoginModal,
-                    config: clientConfig
+                    xIdLoginModal: xIdLoginModal
                 } );
 
                 break;
@@ -607,7 +563,6 @@ import ConnectorConfig from './config/connector.config';
     }
 
     function doLogin( { id, isIgnoreWindow = false } ) {
-        console.log( 'doLogin', id );
         _doConnect( {
             callback: ( err ) => {
                 if ( err ) {
@@ -624,6 +579,7 @@ import ConnectorConfig from './config/connector.config';
 
     /**
      * @callback BIDOIDCConnect.GetUserInfoCallback
+     * @param callback
      * @param accessToken
      * @param tokenType
      * @param responseType
@@ -688,7 +644,9 @@ import ConnectorConfig from './config/connector.config';
             return console.error( 'doInit missing client id' );
         }
 
-        CLIENT_CONFIG.login_hint = config.login_hint || createLoginHintFromConfig( config );
+        CLIENT_CONFIG.login_hint = config.login_hint || CLIENT_CONFIG.login_hint;
+        CLIENT_CONFIG.id_token_hint = config.id_token_hint || CLIENT_CONFIG.id_token_hint;
+        CLIENT_CONFIG.prompt = config.prompt || CLIENT_CONFIG.prompt;
         CLIENT_CONFIG.client_id = config.client_id;
         CLIENT_CONFIG.scope = config.scope || CLIENT_CONFIG.scope;
         CLIENT_CONFIG.response_mode = config.response_mode || CLIENT_CONFIG.response_mode;
@@ -706,8 +664,6 @@ import ConnectorConfig from './config/connector.config';
         }
 
         Object.assign( CLIENT_CONFIG, config );
-        console.log( 'doInit', CLIENT_CONFIG );
-        console.log( 'doInit', CONFIG );
     }
 
     context.BID = {
