@@ -57,7 +57,7 @@ gulp.task( 'connector:js:dist', callback => {
         // beautify: true,
         comments: false,
         compress: true,
-        sourceMap: true
+        sourceMap: false
     };
 
     config.plugins = config.plugins.concat(
