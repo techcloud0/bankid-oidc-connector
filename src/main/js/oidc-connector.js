@@ -1,9 +1,9 @@
 /**
- * @interface BIDOIDCConnect
+ * @interface OIDCConnect
  */
 
 /**
- * @typedef {Object} BIDOIDCConnect.Configuration
+ * @typedef {Object} OIDCConnect.Configuration
  * @property {String} oauth_url
  * @property {String} method
  * @property {String} client_id
@@ -21,66 +21,30 @@
  * @property {String} token_url
  * @property {String} id_token_hint
  * @property {String} prompt
- * @memberOf BIDOIDCConnect
+ * @memberOf OIDCConnect
  */
 
 /**
- * @typedef {Object} BIDOIDCConnect.TokenResult
+ * @typedef {Object} OIDCConnect.TokenResult
  * @property {String} access_token
  * @property {String} token_type
  * @property {Number} expires_in
  * @property {String} scope
  * @property {String} id_token
- * @memberOf BIDOIDCConnect
- */
-
-/**
- * @typedef {Object} BIDOIDCConnect.ConnectButton
- * @property {HTMLElement} button
- * @property {HTMLElement} iframe
- * @property {String} id
- * @property {String} connectEvent
- * @property {String} type
- * @property {String} scope
- * @memberOf BIDOIDCConnect
- */
-
-/**
- * @typedef {Object} BIDOIDCConnect.UserInfo.UserAddress
- * @property {String} formatted
- * @property {String} country
- * @property {String} street_address
- * @property {String} postal_code
- * @property {String} locality
- * @property {String} house_number
- * @property {String} house_letter
- * @property {String} street_name
- * @memberOf BIDOIDCConnect.UserInfo
- */
-/**
- * @typedef {Object} BIDOIDCConnect.UserInfo
- * @property {String} id
- * @property {String} preferred_username
- * @property {String} family_name
- * @property {String} given_name
- * @property {String} name
- * @property {String} birthdate
- * @property {BIDOIDCConnect.UserInfo.UserAddress} address
- * @property {String} phone_number
- * @property {String} email
- * @memberOf BIDOIDCConnect
+ * @memberOf OIDCConnect
  */
 
 import EVENT_CONSTANTS from './constants/event.constants';
-import CONNECTOR_CONSTANTS from './constants/connector.constants';
 import XDM_CONSTANTS from './constants/xdm.constants';
 
-import Dialog from './component/dialog.component';
 import OIDCConfig from './config/oidc.config';
 import ConnectorConfig from './config/connector.config';
 
+import DomHelper from './helper/dom-helper';
+
 ( function ( context ) {
 
+    const VERSION = '1.0.5-SNAPSHOT';
     const CLIENT_CONFIG = new OIDCConfig( {
         scope: 'openid',
         response_mode: 'query',
@@ -100,23 +64,8 @@ import ConnectorConfig from './config/connector.config';
         grant_type: 'authorization_code',
         userinfo_url: '',
         token_url: '',
-        devMode: false // Set this to true if you need to set application_name manually
+        devMode: true // Set this to true if you need to set application_name manually
     } );
-    const CONNECTOR_BUTTON_CONFIG = {
-        callback: null
-    };
-    /**
-     * @type {{id: {BIDOIDCConnect.ConnectButton}}}
-     */
-    const connectButtons = {};
-
-    /**
-     * @param {String} id
-     * @returns {BIDOIDCConnect.ConnectButton}
-     */
-    function getConnectButton( id ) {
-        return connectButtons[id];
-    }
 
     function createRandom() {
         return Math.floor( ( 1 + Math.random() ) * 0x10000 )
@@ -124,56 +73,28 @@ import ConnectorConfig from './config/connector.config';
             .substring( 1 );
     }
 
-    function getUpdatedClientConfig( id, override_config = {} ) {
-        const config = {};
-        if ( id ) {
-            const connectButton = getConnectButton( id );
-
-            if ( connectButton ) {
-                config.scope = connectButton.button.getAttribute( 'scope' ) || CLIENT_CONFIG.scope;
-            }
-        }
-        return Object.assign( config, CLIENT_CONFIG, override_config );
+    /**
+     * Return the merged configuration object with given overrides.
+     *
+     * @param override_config
+     * @return {OIDCConnect.Configuration} configuration object
+     */
+    function getUpdatedClientConfig( override_config = {} ) {
+        return Object.assign( CLIENT_CONFIG, override_config );
     }
 
-    function createConnectButtonIframeElement( connectButtonElement ) {
-        const id = connectButtonElement.id || createRandom();
-
-        let iframeElement = document.createElement( 'iframe' );
-        iframeElement.height = '0px';
-        iframeElement.width = '0px';
-        iframeElement.setAttribute( 'src', 'components/bid-xid_connect_button.html' );
-        iframeElement.setAttribute( 'frameborder', '0' );
-        iframeElement.setAttribute( 'scrolling', 'no' );
-        iframeElement.onload = () => doInitConnectButtonIframe( id, 'xID' );
-
-        connectButtons[id] = {
-            iframe: iframeElement,
-            button: connectButtonElement,
-            id,
-        };
-
-        return iframeElement;
-    }
-
-    function createButtonText( id ) {
-        const connectButton = getConnectButton( id );
-        return connectButton && connectButton.button.getAttribute( 'text' ) || 'Logg inn med xID';
-    }
-
-    function objectToURL( obj ) {
-        return Object.keys( obj )
-            .filter( key => { return CONNECTOR_CONSTANTS.ALLOWED_PARAMS.indexOf( key ) > -1; } )
-            .map( key => `${key}=${encodeURIComponent( obj[key] )}` ).join( '&' );
-    }
-
+    /**
+     * OIDC Connector onLoad handler.
+     */
     function onLoad() {
         doPolyfill();
-        // TODO: Re-enable this when ready
-        doReplaceConnectButton();
         doSendLoadedEvent();
+        console.log( 'Loaded OIDC Connector v' + VERSION );
     }
 
+    /**
+     * Apply polyfills for cross-browser functionality.
+     */
     function doPolyfill() {
         if ( !Array.from ) {
             Array.from = function ( object ) {
@@ -203,94 +124,14 @@ import ConnectorConfig from './config/connector.config';
     }
 
     /**
-     * @param {String} id
-     * @param {Object} err
-     * @param {BIDOIDCConnect.TokenResult|null} [tokenResult]
-     */
-    function doSendConnectEvent( id, err, tokenResult = null ) {
-        let connectEvent = getConnectButton( id ) && getConnectButton( id ).button.getAttribute( 'xid-user' ) || 'xid-connect';
-
-        document.body.dispatchEvent( new window.CustomEvent( connectEvent, {
-            'detail': {
-                id,
-                err,
-                accessToken: tokenResult && tokenResult.access_token
-            }
-        } ) );
-    }
-
-    /**
-     * @param {String}id
-     * @param {Object} err
-     * @param {BIDOIDCConnect.UserInfo|null} [userInfo]
-     */
-    function doSendUserEvent( id, err, userInfo = null ) {
-        let userEvent = getConnectButton( id ) && getConnectButton( id ).button.getAttribute( 'xid-user' ) || 'xid-user';
-
-        document.body.dispatchEvent( new window.CustomEvent( userEvent, {
-            'detail': {
-                id,
-                err,
-                user: userInfo
-            }
-        } ) );
-    }
-
-    function doInitConnectButtonIframe( id, service ) {
-        const connectButton = getConnectButton( id );
-
-        if ( !connectButton ) {
-            return;
-        }
-
-        // const connectEvent = connectButton.button.getAttribute( 'status-event' ) || 'xid-connect';
-        // const type = connectButton.button.getAttribute( 'type' ) || 'login';
-        // const scope = connectButton.button.getAttribute( 'scope' ) || CLIENT_CONFIG.scope;
-
-        const config = getUpdatedClientConfig( id );
-        doSetConnectButtonIframeSize( connectButton.iframe );
-        connectButton.iframe.contentWindow.postMessage( JSON.stringify( {
-            type: 'init',
-            data: {
-                id: connectButton.id,
-                text: createButtonText( id ) + service,
-                authorizeUrl: createAuthorizeClientUrl( config ),
-                method: CONFIG.method
-            }
-        } ), '*' );
-        doHandleXidPostMessage( { element: connectButton.iframe.contentWindow, id: id, callback: CONNECTOR_BUTTON_CONFIG.callback, once: false } );
-    }
-
-    function doSetConnectButtonIframeSize( iframeElement ) {
-        const height = Math.max( iframeElement.contentWindow.document.documentElement['clientHeight'],
-            iframeElement.contentWindow.document.body['scrollHeight'],
-            iframeElement.contentWindow.document.documentElement['scrollHeight'],
-            iframeElement.contentWindow.document.body['offsetHeight'],
-            iframeElement.contentWindow.document.documentElement['offsetHeight'] );
-        const width = Math.max( iframeElement.contentWindow.document.documentElement['clientWidth'],
-            iframeElement.contentWindow.document.body['scrollWidth'],
-            iframeElement.contentWindow.document.documentElement['scrollWidth'],
-            iframeElement.contentWindow.document.body['offsetWidth'],
-            iframeElement.contentWindow.document.documentElement['offsetWidth'] );
-
-        iframeElement.height = '';
-        iframeElement.height = height + 'px';
-        iframeElement.width = '';
-        iframeElement.width = width + 'px';
-    }
-
-    /**
      *
      * @param element
      * @param loginWindow
-     * @param id
      * @param callback
      * @param once
      * @param inlineElement
-     * @param xIdLoginModal
      */
-    function doHandleXidPostMessage( { element, loginWindow, id, callback, once, inlineElement = null, xIdLoginModal = null } ) {
-        // const connectButton = getConnectButton( id );
+    function doHandlePostMessage( { element, loginWindow, callback, once, inlineElement = null } ) {
 
         function actionCallback( event ) {
             let data = {};
@@ -301,18 +142,10 @@ import ConnectorConfig from './config/connector.config';
                 // ignore
             }
             switch ( data.type ) {
-                case 'click': {
-                    doLogin( { id, isIgnoreWindow: true } );
-                    break;
-                }
                 case XDM_CONSTANTS.BID_ERROR_RECEIVED_XDM_EVENT:
                 case XDM_CONSTANTS.BID_RESPONSE_DATA_RECEIVED_XDM_EVENT: {
                     if ( loginWindow ) {
                         loginWindow.close();
-                    }
-
-                    if ( xIdLoginModal ) {
-                        xIdLoginModal.hideDialog();
                     }
 
                     if ( inlineElement ) {
@@ -321,16 +154,13 @@ import ConnectorConfig from './config/connector.config';
                     }
 
                     if ( data.error ) {
-                        doSendConnectEvent( id, data.error );
-
                         if ( callback ) {
                             callback( { error: data.error } );
                         }
                     }
                     else {
-                        doSendConnectEvent( id, null, data.data );
                         if ( CONFIG.token_url && CLIENT_CONFIG.response_type === 'code' && data.data.code !== undefined ) {
-                            doAuthenticateCode( id, data.data.code, callback );
+                            doAuthenticateCode( data.data.code, callback );
                         } else if ( callback ) {
                             callback( null, data.data );
                         }
@@ -340,140 +170,73 @@ import ConnectorConfig from './config/connector.config';
                     }
                     break;
                 }
-                default: {
-                    // Show dialog if any other action than callback
-                    if ( xIdLoginModal ) {
-                        xIdLoginModal.showDialog();
-                    }
-                }
             }
         }
         element.addEventListener( 'message', actionCallback );
     }
 
-    function doReplaceConnectButton() {
-        const connectButtonElements = Array.from( document.querySelectorAll( 'xid\\:connect-button' ) );
-
-        connectButtonElements.forEach( connectButtonElement => {
-            const connectButtonIframeElement = createConnectButtonIframeElement( connectButtonElement );
-            connectButtonElement.parentNode.replaceChild( connectButtonIframeElement, connectButtonElement );
-        } );
-    }
-
-    /**
-     * @param {String} url
-     * @param {Object} data
-     * @param {Function} callback
-     * @param {Array} headers (optional)
-     */
-    function doAjax( url, data, callback, headers = [] ) {
-        const dataForm = objectToURL( data );
-
-        const xhr = new window.XMLHttpRequest();
-        xhr.withCredentials = true;
-        xhr.addEventListener( 'load', () => {
-            if ( xhr.readyState === xhr.DONE && xhr.status === 200 ) {
-
-                try {
-                    callback( null, JSON.parse( xhr.responseText ) || {} );
-                }
-                catch ( e ) {
-                    console.trace( e );
-                    callback( { error: 'Invalid JSON in response' } );
-                }
-            }
-            else {
-                callback( { error: 'Unexpected error', status: xhr.status, message: xhr.responseText } );
-            }
-        } );
-
-        xhr.addEventListener( 'error', ( e ) => callback( e ) );
-        xhr.addEventListener( 'timeout', () => callback( { timeout: true } ) );
-        xhr.addEventListener( 'abort', () => callback( { abort: true } ) );
-
-        xhr.open( 'POST', url );
-        for ( const header in headers ) {
-            if ( headers.hasOwnProperty( header ) ) {
-                xhr.setRequestHeader( header, headers[header] );
-            }
-        }
-        xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
-        xhr.send( dataForm );
-    }
-
-    function doAuthenticateCode( id, code, callback ) {
-        doAjax( CONFIG.token_url, {
+    function doAuthenticateCode( code, callback ) {
+        DomHelper.doPost( CONFIG.token_url, {
             'client_id': CLIENT_CONFIG.client_id,
             'grant_type': CONFIG.grant_type,
             'code': code,
             'redirect_uri': CLIENT_CONFIG.redirect_uri
         }, ( err, result ) => {
-            if ( err ) {
-                doSendConnectEvent( id, err );
-
-                if ( callback ) {
+            if ( callback ) {
+                if ( err ) {
                     callback( err );
                 }
-            }
-            else {
-                if ( result['error'] ) {
-                    doSendConnectEvent( id, result['error'] );
-
-                    if ( callback ) {
-                        callback( { error: result['error'] } );
-                    }
-                }
-                else {
-                    doSendConnectEvent( id, null, result );
-
-                    if ( callback ) {
-                        callback( null, result );
-                    }
+                else if ( result['error'] ) {
+                    callback( { error: result['error'] } );
+                } else {
+                    callback( null, result );
                 }
             }
         } );
     }
 
+    /**
+     * Generate the URL to the OAUTH2 Authorize endpoint from oauth_url and configuration parameters
+     *
+     * @param {OIDCConnect.Configuration} clientConfig
+     * @return {string} url to OAUTH2 Authorize Endpoint
+     */
     function createAuthorizeClientUrl( clientConfig ) {
-        const objectUrl = objectToURL( clientConfig );
+        const objectUrl = DomHelper.serializeConfigToURL( clientConfig );
         return `${CONFIG.oauth_url}?${objectUrl}`;
     }
 
     /**
      * Public doConnect API function for starting a xID login session.
      * @param {Function} [callback]
-     * @param {BIDOIDCConnect.Configuration} [config]
+     * @param {OIDCConnect.Configuration} [config]
      * @param {Function} [inlineOnLoadCallback]
      * @param {HTMLElement} [inlineElementID]
-     * @param {Boolean} [inlineModalWindow]
      */
-    function doConnect(  { callback=null, config={}, inlineOnLoadCallback=null, inlineElementID=null, inlineModalWindow=null } ) {
+    function doConnect(  { callback=null, config={}, inlineOnLoadCallback=null, inlineElementID=null } ) {
         _doConnect( {
             callback: callback,
             config: config,
             inlineElementID: inlineElementID,
-            inlineOnLoadCallback: inlineOnLoadCallback,
-            inlineModalWindow: inlineModalWindow
+            inlineOnLoadCallback: inlineOnLoadCallback
         } );
     }
 
     /**
      * Perform doConnect to xID with configuration.
      * @param {Function} [callback]
-     * @param {BIDOIDCConnect.Configuration} [config]
+     * @param {OIDCConnect.Configuration} [config]
      * @param {Function} [inlineOnLoadCallback]
-     * @param {String} id
      * @param {String} inlineElementID
      * @param {Boolean} [isIgnoreWindow]
-     * @param {Boolean} [inlineModalWindow]
      * @private
      */
-    function _doConnect( { callback, config = {}, id, inlineElementID, inlineOnLoadCallback, isIgnoreWindow, inlineModalWindow } ) {
+    function _doConnect( { callback, config = {}, inlineElementID, inlineOnLoadCallback, isIgnoreWindow } ) {
         if ( !callback ) {
             return console.error( 'doConnect missing callback!' );
         }
 
-        const clientConfig = getUpdatedClientConfig( id, config );
+        const clientConfig = getUpdatedClientConfig( config );
         const authorizeUrl = createAuthorizeClientUrl( clientConfig );
 
         const method = ( config && config.method ) ? config.method : CONFIG.method;
@@ -499,10 +262,9 @@ import ConnectorConfig from './config/connector.config';
                             `top=${windowTop}`
                         ].join( ',' ) );
 
-                    doHandleXidPostMessage( {
+                    doHandlePostMessage( {
                         element: context,
                         loginWindow: loginWindow,
-                        id: id,
                         once: true,
                         callback: callback
                     } );
@@ -532,28 +294,12 @@ import ConnectorConfig from './config/connector.config';
                 }
                 inlineElement.appendChild( iframeElement );
 
-                let xIdLoginModal = null;
-                if ( inlineModalWindow ) {
-                    xIdLoginModal = new Dialog(
-                        document.querySelector( `${Dialog.SELECTORS.DIALOG}[data-dialog=xid-login-modal]` ),
-                        { isModal: true }
-                    );
-                    xIdLoginModal.initDialog();
-
-                    // Show dialog if not unsolicited and nodialog
-                    if ( clientConfig.login_hint.indexOf( ':unsolicited:nodialog' ) === -1 ) {
-                        xIdLoginModal.showDialog();
-                    }
-                }
-
-                doHandleXidPostMessage( {
+                doHandlePostMessage( {
                     element: context,
                     loginWindow: null,
-                    id: id,
                     callback: callback,
                     once: true,
-                    inlineElement: inlineElement,
-                    xIdLoginModal: xIdLoginModal
+                    inlineElement: inlineElement
                 } );
 
                 break;
@@ -562,30 +308,17 @@ import ConnectorConfig from './config/connector.config';
 
     }
 
-    function doLogin( { id, isIgnoreWindow = false } ) {
-        _doConnect( {
-            callback: ( err ) => {
-                if ( err ) {
-                    doSendUserEvent( id, err );
-                }
-                else {
-                    doGetUserInfo( ( err, user ) => doSendUserEvent( id, err, user || null ) );
-                }
-            },
-            id: id,
-            isIgnoreWindow: isIgnoreWindow
-        } );
-    }
-
     /**
-     * @callback BIDOIDCConnect.GetUserInfoCallback
+     * @callback OIDCConnect.GetUserInfoCallback
      * @param callback
      * @param accessToken
      * @param tokenType
      * @param responseType
-     * @memberOf BIDOIDCConnect
+     * @memberOf OIDCConnect
      */
     function doGetUserInfo( callback, accessToken = null, tokenType = null, responseType = 'code' ) {
+        console.warning( 'doGetUserInfo is an experimental feature' );
+
         if ( !callback ) {
             return console.error( 'doGetUserInfo missing callback!' );
         }
@@ -606,7 +339,7 @@ import ConnectorConfig from './config/connector.config';
             headers.Authorization = `${tokenType} ${accessToken}`;
         }
 
-        doAjax( CONFIG.userinfo_url, data, ( err, result ) => {
+        DomHelper.doPost( CONFIG.userinfo_url, data, ( err, result ) => {
             if ( err ) {
                 callback( err );
             }
@@ -622,7 +355,7 @@ import ConnectorConfig from './config/connector.config';
     }
 
     /**
-     * @param {BIDOIDCConnect.Configuration} config
+     * @param {OIDCConnect.Configuration} config
      */
     function doInit( config={} ) {
         if ( !config ) {
@@ -641,7 +374,7 @@ import ConnectorConfig from './config/connector.config';
         }
 
         if ( !config.hasOwnProperty( 'client_id' ) ) {
-            return console.error( 'doInit missing client id' );
+            return console.error( 'doInit missing client_id' );
         }
 
         CLIENT_CONFIG.login_hint = config.login_hint || CLIENT_CONFIG.login_hint;
@@ -656,12 +389,6 @@ import ConnectorConfig from './config/connector.config';
         CLIENT_CONFIG.ui_locales = config.ui_locales || CLIENT_CONFIG.ui_locales;
         CLIENT_CONFIG.acr_values = config.acr_values || CLIENT_CONFIG.acr_values;
         CLIENT_CONFIG.nonce = config.nonce || CLIENT_CONFIG.nonce;
-
-        CONNECTOR_BUTTON_CONFIG.callback = config.callback;
-
-        if ( config.devMode ) {
-            CLIENT_CONFIG.application_name = 'Testclient';
-        }
 
         Object.assign( CLIENT_CONFIG, config );
     }
