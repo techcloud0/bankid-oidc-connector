@@ -1,3 +1,3 @@
 export default {
-    STORAGE_KEY_ACCESS: 'bid-connector-access'
+    STORAGE_KEY_ACCESS: 'oidc-connector-access'
 };

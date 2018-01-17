@@ -120,7 +120,6 @@ import DomHelper from './helper/dom-helper';
 
     function doSendLoadedEvent() {
         document.body.dispatchEvent( new window.CustomEvent( EVENT_CONSTANTS.LOADED_EVENT ) );
-        document.body.dispatchEvent( new window.CustomEvent( EVENT_CONSTANTS.XID_LOADED_EVENT ) );
     }
 
     /**
@@ -207,7 +206,7 @@ import DomHelper from './helper/dom-helper';
     }
 
     /**
-     * Public doConnect API function for starting a xID login session.
+     * Public doConnect API function for starting a login session.
      * @param {Function} [callback]
      * @param {OIDCConnect.Configuration} [config]
      * @param {Function} [inlineOnLoadCallback]
@@ -223,7 +222,7 @@ import DomHelper from './helper/dom-helper';
     }
 
     /**
-     * Perform doConnect to xID with configuration.
+     * Perform doConnect to OIDC with configuration.
      * @param {Function} [callback]
      * @param {OIDCConnect.Configuration} [config]
      * @param {Function} [inlineOnLoadCallback]
@@ -393,14 +392,11 @@ import DomHelper from './helper/dom-helper';
         Object.assign( CLIENT_CONFIG, config );
     }
 
-    context.BID = {
+    context.OIDC = {
         doInit: doInit,
         doConnect: doConnect,
         doGetUserInfo: doGetUserInfo
     };
-
-    // TODO Refactor to xID specific part
-    context.XID = context.BID;
 
     context.addEventListener( 'load', onLoad, false );
 } )( window );
