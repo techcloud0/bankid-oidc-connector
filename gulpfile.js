@@ -9,7 +9,7 @@ requireDir( path.resolve( __dirname, 'src/tools/gulp' ), {
     includeFiles: /\.gulp\.js$/
 } );
 
-gulp.task( 'connector', ['connector:scss:watch', 'connector:js:watch'] );
+gulp.task( 'connector', ['connector:js:watch'] );
 
 gulp.task( 'connector:dist', ( cb ) => {
     runSequence( 'connector:clean:dist', ['connector:js:dist'], cb );
