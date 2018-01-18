@@ -44,7 +44,7 @@ import DomHelper from './helper/dom-helper';
 
 ( function ( context ) {
 
-    const VERSION = '1.0.5-SNAPSHOT';
+    const VERSION = '1.1.0';
     const CLIENT_CONFIG = new OIDCConfig( {
         scope: 'openid',
         response_mode: 'query',
