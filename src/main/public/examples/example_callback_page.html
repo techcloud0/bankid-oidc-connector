@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0"/>
+    <title>OIDC Connector Test Callback</title>
+</head>
+<body>
+<!--
+This callback page is rendered at callback_uri after the OIDC authorization request returns.
+
+This is an example implementation of a callback script for those sites that use frame method inline (iframe) or window.
+The idea of this page is to communicate with the BankID JS Connect instance sitting in the parent site that launched the
+iframe or window in the first place.
+
+Depending on the response methods chosen in the initial request, this page will attempt to use XDM (Cross-domain messaging)
+messages to communicate to the parent site.
+
+When this page loads it will do the following:
+
+1. Checking a special if this was a form_post response_mode (handled by the server).
+2. Retrieving response data based on response_mode chosen: form_post, query or fragment
+3. Checking data received and doing an XDM event postMessage to parent Window with data.
+
+That's it!
+
+BankID JS Connect will now close this window.
+-->
+<script>
+    var formPost = '{form_post}';
+    formPost = /{\w+}/.test(formPost) ? null : JSON.parse( formPost );
+
+    function urlSearchToObj( search ) {
+        var pairs = search.substring( 1 ).split( '&' ),
+            obj = {},
+            pair;
+
+        for ( var i = 0; i < pairs.length; i ++) {
+            if ( pairs[i] === '' ) {
+                continue;
+            }
+
+            pair = pairs[i].split( '=' );
+            obj[decodeURIComponent( pair[0] )] = decodeURIComponent( pair[1] );
+        }
+
+        return obj;
+    }
+    // Get form_post data, or query params, or hash fragment params
+    // Get form_post data, or query params, or hash fragment params
+    var urlParams = formPost || urlSearchToObj( document.location.search || document.location.hash );
+    var hasError = false;
+
+    if ( urlParams['error'] ) {
+        console.error( 'Received error: ' + urlParams['error'] );
+        hasError = true;
+    }
+
+    var windowParent = window.opener || window.parent;
+
+    if ( windowParent !== window) {
+        if ( !hasError ) {
+            windowParent.postMessage( JSON.stringify( { type: 'oidc-connector-response-data', data: urlParams } ), '*' );
+        } else {
+            windowParent.postMessage( JSON.stringify( { type: 'oidc-connector-error', error: urlParams['error'] } ), '*' );
+        }
+    } else {
+        console.warn( 'BIDConnectorError: Could not send code, does not have parent window' );
+    }
+</script>
+
+</body>
+</html>

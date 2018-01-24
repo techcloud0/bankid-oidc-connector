@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <title>OIDC Connector - Window mode example</title>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="column" style="margin-top: 25%">
+            <h3>BankID OIDC Connector</h3>
+            <h4>Window mode example</h4>
+            <pre><code>
+    // Handle button click and start login
+    function onOIDCButtonClick() {
+        window.OIDC.doConnect({
+            callback: function( err, data ) {
+                if ( err ) {
+                    return;
+                }
+                console.log( data );
+            }
+        });
+    }
+
+    function onOIDCLoaded() {
+        // Initialise OIDC with required parameters
+        window.OIDC.doInit({
+            // URL to OIDC service
+            oauth_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/protocol/openid-connect/auth',
+            // Merchant given client ID on the OIDC service
+            client_id: 'your_client_id',
+            // Your callback URL that will receive the Authorization Grant response
+            redirect_uri: 'https://yourdomain.com/oidc/callback',
+            // Set window as chosen integration method
+            method: 'window',
+        });
+        var button = document.querySelector('button');
+        button.addEventListener('click', onOIDCButtonClick, false);
+    }
+
+    // Call initialize when OIDC Connector has loaded
+    document.body.addEventListener( 'oidc-connector-loaded', onOIDCLoaded, false);
+            </code></pre>
+            <button>Logg inn med OIDC</button>
+            <p><a href="index.html">Back</a></p>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    // Handle button click and start login
+    function onOIDCButtonClick() {
+        window.OIDC.doConnect({
+            callback: function( err, data ) {
+                if ( err ) {
+                    return;
+                }
+                console.log( data );
+            }
+        });
+    }
+
+    function onOIDCLoaded() {
+        // Initialise OIDC with required parameters
+        window.OIDC.doInit({
+            // URL to OIDC service
+            oauth_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/protocol/openid-connect/auth',
+            // Merchant given client ID on the OIDC service
+            client_id: 'your_client_id',
+            // Your callback URL that will receive the Authorization Grant response
+            redirect_uri: 'https://yourdomain.com/oidc/callback',
+            // Set window as chosen integration method
+            method: 'window',
+        });
+        var button = document.querySelector('button');
+        button.addEventListener('click', onOIDCButtonClick, false);
+    }
+
+    // Call initialize when OIDC Connector has loaded
+    document.body.addEventListener( 'oidc-connector-loaded', onOIDCLoaded, false);
+</script>
+<script async defer src="../js/connector.bundle.js"></script>
+
+</body>
+</html>
