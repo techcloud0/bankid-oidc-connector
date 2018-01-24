@@ -1,7 +1,6 @@
-# BankID OIDC Connector v1.0.2
+# BankID OIDC Connector
 
-## How do I use this
-The BankID OIDC Connector is a helper library for interacting with the BankID OpenID Connect Platform - a simple identity layer on top of the OAuth 2.0 protocol.
+The BankID OIDC Connector provides a Javascript API to easily integrate with the BankID OpenID Connect Platform.
 
 ## Usage
 

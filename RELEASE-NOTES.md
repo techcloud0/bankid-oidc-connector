@@ -1,7 +1,7 @@
-BankID OIDC Connector v1.0.2
+BankID OIDC Connector v1.1.1
 ============================
 
-BankID OIDC Connector v1.0.2 was released on October 10, 2017.
+BankID OIDC Connector v1.1.1 was released on January 24, 2018.
 
 About
 -----
@@ -11,8 +11,9 @@ BankID OIDC connector is a library for easy integration of BankID authentication
 What's new
 ----------
 
-- Fixed a problem with redirect method
-- Streamlined the examples
+- Initial public release
+- New examples
+- Added links to documentation
 
 Installation
 ------------
@@ -22,4 +23,4 @@ See README.md
 Documentation
 -------------
 
-Official documentation: https://confluence.bankidnorge.no/confluence/pages/viewpage.action?pageId=96831073&src=contextnavpagetreemode
+Official documentation: https://confluence.bankidnorge.no/confluence/pdoidcl
