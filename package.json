@@ -1,9 +1,9 @@
 {
   "name": "bankid-oidc-connector",
   "version": "1.1.0",
-  "description": "BankID OIDC connector library for easy integration of BankID authentication on your site.",
-  "author": "Knowit",
-  "license": "ISC",
+  "description": "Javascript API that simplifies integration with the REST API for front-end based OIDC Clients",
+  "author": "BankID",
+  "license": "Apache-2.0",
   "scripts": {
     "start": "gulp connector:server",
     "test": "gulp connector:test"
