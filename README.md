@@ -5,15 +5,15 @@ The BankID OIDC Connector is a helper library for interacting with the BankID Op
 
 ## Usage
 
-Check out the [official documentation](https://confluence.bankidnorge.no/confluence/pages/viewpage.action?pageId=96831073).
+Check out the [official documentation](https://confluence.bankidnorge.no/confluence/pdoidcl/js-connector).
 
 ## Examples
 
-Check `src/main/public/examples/simple.html` for current usage.
+See the examples folder in `src/main/public/examples/` or check out the [documentation](https://confluence.bankidnorge.no/confluence/pdoidcl/js-connector/examples).
 
 ## Development
 
-For development, a node server is used to host the connector and example pages, in addition to middlewares for OAUTH handling.
+A node server is used to host the connector and example pages, in addition to middlewares for special OAUTH handling.
 
 ### Requirements
 
@@ -36,10 +36,8 @@ gulp connector:dev
 ```
 
 ## Additional reading
-OpenID Connect supports three different flows
-* Authorization Code Flow
-* Implicit Flow
-* Hybrid Flow
 
-Each of these flows fits a certain kind of use. Here is a good resource explaining what properties each flow supports (helps you determine what flow to select for each use case).
-http://openid.net/specs/openid-connect-core-1_0.html#Authentication
+Official [documentation](https://confluence.bankidnorge.no/confluence/pdoidcl) from OIDC Provider BankID.
+
+OpenID Connect specification:
+http://openid.net/specs/openid-connect-core-1_0.html
