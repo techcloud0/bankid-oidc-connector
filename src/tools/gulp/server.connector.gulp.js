@@ -105,6 +105,7 @@ gulp.task( 'connector:server', () => {
     return connect.server( {
         port: packageJson.port,
         root: PUBLIC_FOLDER,
+        https: true,  // can also be on object. See https://nodejs.org/api/https.html#https_https_createserver_options_requestlistener
         middleware: () => {
             return middlewareList;
         }
