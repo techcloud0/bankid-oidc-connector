@@ -8,7 +8,7 @@ Check out the [official documentation](https://confluence.bankidnorge.no/conflue
 
 ## Examples
 
-See the examples folder in `src/main/public/examples/` or check out the [documentation](https://confluence.bankidnorge.no/confluence/pdoidcl/js-connector/examples).
+See the examples folder in `src/main/public/` or check out the [documentation](https://confluence.bankidnorge.no/confluence/pdoidcl/js-connector/examples).
 
 ## Development
 
@@ -21,6 +21,7 @@ A node server is used to host the connector and example pages, in addition to mi
 ### Install dependencies
 
 ```
+npm install --global gulp-cli
 npm install
 ```
 
