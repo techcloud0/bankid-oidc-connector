@@ -4,23 +4,58 @@ The BankID OIDC Connector provides a Javascript API to easily integrate with the
 
 ## Documentation
 
-Official [documentation](https://confluence.bankidnorge.no/confluence/pdoidcl) from OIDC Provider BankID.
+See official [documentation](https://confluence.bankidnorge.no/confluence/pdoidcl) from OIDC Provider BankID.
 
 ## Usage
 
-See example usage in `src/main/public/` or check out the [examples](https://confluence.bankidnorge.no/confluence/pdoidcl/js-connector/examples) page in the documentation.
+A simple example on how to connect to an OIDC provider like BankID:
 
-If you want to build your own connector file, see [Development](#development).
+```javascript
+// Listen for loaded event
+document.body.addEventListener( 'oidc-connector-loaded', function() {
+    window.OIDC.doInit({
+        // URL to OIDC service
+        oauth_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/protocol/openid-connect/auth',
+        // Merchant given client ID on the OIDC service
+        // TODO: Replace this with your own!
+        client_id: 'your_client_id',
+        // Your callback URL that will receive the Authorization Grant response
+        // TODO: Replace this with your own!
+        redirect_uri: 'https://yourdomain.com/oidc/callback',
+        // Open the OIDC session in a popup window
+        method: 'window'
+    });
+}, false);
 
-## Development
+// Then on some login button click event, for example:
+document.querySelector('button').addEventListener('click', function() {
+    window.OIDC.doConnect( {
+        callback: function( err, data ) {
+            if ( err ) {
+                console.warn( 'OIDC login error: ', err );
+                return;
+            }
+            console.log( 'OIDC login finished. Received: ', data );
+        }
+    });
+}, false);
+```
 
-A node server is used to host the connector and example pages.
+* **NOTE: You need to replace `client_id` and `redirect_uri` with your own values.**
+* By default, the OIDC connector will use redirect mode. Change `method` parameter to `window`, or `inline` for other modes.
+* You can add a `login_hint` parameter to `OIDC.doInit({ login_hint: 'XID' })` or `OIDC.doConnect()`
+
+See more examples under `src/main/public/` or check out the [examples](https://confluence.bankidnorge.no/confluence/pdoidcl/js-connector/examples) page in the documentation.
+
+## Build
+
+A node server is used to host the connector and example pages. Gulp is used to build the connector and run the development server.
 
 ### Requirements
 
 - NodeJS 6+
 
-### Install dependencies
+### Installation
 
 ```
 npm install --global gulp-cli
@@ -29,13 +64,20 @@ npm install
 
 ### Run
 
-```
+```bash
 gulp
 ```
+This will watch for changes in `src/main/js` and a server will be hosted on [https://localhost:3000](https://localhost:3000) where you will find more examples.
 
-A server will be hosted on [https://localhost:3000](https://localhost:3000) where you can view usage examples.
+The connector bundle is hosted at [https://localhost:3000/js/connector.bundle.js](https://localhost:3000/js/connector.bundle.js) 
 
-The connector is hosted at [https://localhost:3000/js/connector.bundle.js](https://localhost:3000/js/connector.bundle.js) 
+### Build
+
+If you want to build your own OIDC connector distribution:
+
+```bash
+gulp connector:dist
+```
 
 ### HTTPS
 
@@ -66,6 +108,8 @@ In order to use this feature with the development server, you need to do the fol
 4. Restart your development server
 
 ## Additional reading
+
+See [Release Notes](RELEASE-NOTES.md) for latest version and [Change Log](CHANGELOG.md) for release notes on all releases.
 
 OpenID Connect specification:
 http://openid.net/specs/openid-connect-core-1_0.html

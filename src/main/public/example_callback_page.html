@@ -24,7 +24,7 @@ When this page loads it will do the following:
 
 That's it!
 
-BankID JS Connect will now close this window.
+OIDC Connector will now close this window.
 -->
 <script>
     var formPost = '{form_post}';
@@ -65,7 +65,7 @@ BankID JS Connect will now close this window.
             windowParent.postMessage( JSON.stringify( { type: 'oidc-connector-error', error: urlParams['error'] } ), '*' );
         }
     } else {
-        console.warn( 'BIDConnectorError: Could not send code, does not have parent window' );
+        console.warn( 'OIDCConnectorError: Could not send code, does not have parent window' );
     }
 </script>
 

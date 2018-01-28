@@ -16,19 +16,22 @@
             <h4>Simple example</h4>
             <pre><code>
     function onLogin() {
+        // Default method mode is redirect, so callback handler is not applicable.
         window.OIDC.doConnect( {
             callback: function() {}
         });
     }
 
     function onOIDCLoaded() {
-        // Initialise OIDC with required parameters
+        // Initialise OIDC with required parameters, method is redirect by default
         window.OIDC.doInit({
             // URL to OIDC service
             oauth_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/protocol/openid-connect/auth',
             // Merchant given client ID on the OIDC service
+            // TODO: Replace this with your own!
             client_id: 'your_client_id',
             // Your callback URL that will receive the Authorization Grant response
+            // TODO: Replace this with your own!
             redirect_uri: 'https://yourdomain.com/oidc/callback',
         });
 
@@ -45,19 +48,22 @@
 
 <script type="text/javascript">
     function onLogin() {
+        // Default method mode is redirect, so callback handler is not applicable.
         window.OIDC.doConnect( {
             callback: function() {}
         });
     }
 
     function onOIDCLoaded() {
-        // Initialise OIDC with required parameters
+        // Initialise OIDC with required parameters, method is redirect by default
         window.OIDC.doInit({
             // URL to OIDC service
             oauth_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/protocol/openid-connect/auth',
             // Merchant given client ID on the OIDC service
+            // TODO: Replace this with your own!
             client_id: 'your_client_id',
             // Your callback URL that will receive the Authorization Grant response
+            // TODO: Replace this with your own!
             redirect_uri: 'https://yourdomain.com/oidc/callback',
         });
 
