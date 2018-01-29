@@ -1,5 +1,12 @@
 # Changelog - BankID OIDC Connector
 
+## [1.2.0] - 29.01.2018
+
+### Updated
+- Development server now serves on HTTPS by default
+- Improved README
+- Revamped examples and location in source tree
+
 ## [1.1.1] - 24.01.2018
 
 ### Added
