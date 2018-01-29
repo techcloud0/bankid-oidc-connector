@@ -47,7 +47,7 @@ document.querySelector('button').addEventListener('click', function() {
 
 See more examples under `src/main/public/` or check out the [examples](https://confluence.bankidnorge.no/confluence/pdoidcl/js-connector/examples) page in the documentation.
 
-## Build
+## Development
 
 A node server is used to host the connector and example pages. Gulp is used to build the connector and run the development server.
 
