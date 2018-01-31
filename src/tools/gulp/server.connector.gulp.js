@@ -13,6 +13,7 @@ const fs = require( 'fs' );
 const mime = require( 'mime' );
 const responseFormPostMiddleware = require( '../server/response-form-post.server-middleware' );
 const oauthServerMiddleware = require( '../server/oauth.server-middleware' );
+const serverCommon = require( '../server/server.common' );
 
 const callbackPageFile = path.resolve( PUBLIC_FOLDER, 'example_callback_page.html' );
 const packageJson = require( path.resolve( __dirname, ROOT, 'package.json' ) );
@@ -73,7 +74,8 @@ gulp.task( 'connector:server', () => {
     return connect.server( {
         port: packageJson.port,
         root: PUBLIC_FOLDER,
-        https: true,  // can also be on object. See https://nodejs.org/api/https.html#https_https_createserver_options_requestlistener
+        // https can also be on object. See https://nodejs.org/api/https.html#https_https_createserver_options_requestlistener
+        https: serverCommon.getConfigJson()['https'],
         middleware: () => {
             return middlewareList;
         }

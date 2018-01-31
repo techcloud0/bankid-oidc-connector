@@ -1,5 +1,6 @@
 {
     "clientSecret": "changeme",
     "tokenUrl": "/api/token",
-    "userInfoUrl": "/api/userinfo"
+    "userInfoUrl": "/api/userinfo",
+    "https": true
 }
