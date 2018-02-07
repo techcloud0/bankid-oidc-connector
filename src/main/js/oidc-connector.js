@@ -52,7 +52,7 @@ import DomHelper from './helper/dom-helper';
         redirect_uri: '',
         ui_locales: 'nb',
         acr_values: '4',
-        nonce: createRandom(),
+        nonce: DomHelper.createRandomHexString(),
         state: 'untouched',
         login_hint: '',
         id_token_hint: '',
@@ -66,12 +66,6 @@ import DomHelper from './helper/dom-helper';
         token_url: '',
         devMode: true // Set this to true if you need to set application_name manually
     } );
-
-    function createRandom() {
-        return Math.floor( ( 1 + Math.random() ) * 0x10000 )
-            .toString( 16 )
-            .substring( 1 );
-    }
 
     /**
      * Return the merged configuration object with given overrides.

@@ -3,6 +3,16 @@ import CONNECTOR_CONSTANTS from '../constants/connector.constants';
 export default class DomHelper {
 
     /**
+     * Returns a random hex as string.
+     * @return {string}
+     */
+    static createRandomHexString() {
+        return Math.floor( ( 1 + Math.random() ) * 0x10000 )
+            .toString( 16 )
+            .substring( 1 );
+    }
+
+    /**
      * Return an URL encoded query string from given object.
      * @param {OIDCConnect.Configuration} config
      * @return {string}
@@ -35,7 +45,7 @@ export default class DomHelper {
      * @param {Object} headers (optional)
      */
     static doPost( url, data, callback, headers = {} ) {
-        const dataForm = DomHelper.serializeConfigToURL(data);
+        const dataForm = DomHelper.serializeConfigToURL( data );
 
         const xhr = new ( window.XMLHttpRequest || window.ActiveXObject )( 'MSXML2.XMLHTTP.3.0' );
         xhr.withCredentials = true;
