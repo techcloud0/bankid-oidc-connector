@@ -6,12 +6,18 @@
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/skeleton.css">
     <title>OIDC Connector - Implicit mode example (inline)</title>
+    <style>
+        #auth {
+            width: 460px;
+            height: 350px;
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
     <div class="row">
-        <div class="column" style="margin-top: 25%">
+        <div class="column" style="margin-top: 15%">
             <h3>BankID OIDC Connector</h3>
             <h4>Implicit mode example</h4>
             <pre><code>
@@ -60,7 +66,7 @@
 
 <script type="text/javascript">
     function onOIDCButtonClick() {
-        window.OIDC.doConnect({
+        var iframeElement = window.OIDC.doConnect({
             inlineElementID: 'auth',
             callback: function( err, data ) {
                 if ( err ) {
@@ -69,6 +75,7 @@
                 console.log( data );
             }
         });
+        console.log( 'Got inline object', iframeElement );
     }
 
     function onOIDCLoaded() {

@@ -71,8 +71,9 @@ import DomHelper from './helper/dom-helper';
      *
      * @param override_config
      * @return {OIDCConnect.Configuration} configuration object
+     * @private
      */
-    function getUpdatedClientConfig( override_config = {} ) {
+    function _getUpdatedClientConfig( override_config = {} ) {
         return Object.assign( CLIENT_CONFIG, override_config );
     }
 
@@ -81,8 +82,9 @@ import DomHelper from './helper/dom-helper';
      *
      * @param {OIDCConnect.Configuration} clientConfig
      * @return {string} url to OAUTH2 Authorize Endpoint
+     * @private
      */
-    function createAuthorizeClientUrl( clientConfig ) {
+    function _createAuthorizeClientUrl( clientConfig ) {
         const objectUrl = DomHelper.serializeConfigToURL( clientConfig );
         return `${CONFIG.oauth_url}?${objectUrl}`;
     }
@@ -91,15 +93,16 @@ import DomHelper from './helper/dom-helper';
      * OIDC Connector onLoad handler.
      */
     function onLoad() {
-        doPolyfill();
-        doSendLoadedEvent();
+        _doPolyfill();
+        _doSendLoadedEvent();
         console.log( 'Loaded OIDC Connector v' + VERSION );
     }
 
     /**
      * Apply polyfills for cross-browser functionality.
+     * @private
      */
-    function doPolyfill() {
+    function _doPolyfill() {
         // custom event polyfill
         if ( typeof window.CustomEvent === 'function' ) {
             return false;
@@ -116,19 +119,25 @@ import DomHelper from './helper/dom-helper';
         window.CustomEvent = CustomEvent;
     }
 
-    function doSendLoadedEvent() {
+    /**
+     * Dispatch event that the connector is loaded.
+     * @private
+     */
+    function _doSendLoadedEvent() {
         document.body.dispatchEvent( new window.CustomEvent( EVENT_CONSTANTS.LOADED_EVENT ) );
     }
 
     /**
+     * Handle potential XDM communication from a callback page.
      *
      * @param element
      * @param loginWindow
      * @param callback
      * @param once
      * @param inlineElement
+     * @private
      */
-    function doHandlePostMessage( { element, loginWindow, callback, once, inlineElement = null } ) {
+    function _doHandlePostMessage( { element, loginWindow, callback, once, inlineElement = null } ) {
 
         function actionCallback( event ) {
             let data = {};
@@ -157,7 +166,7 @@ import DomHelper from './helper/dom-helper';
                     }
                     else {
                         if ( CONFIG.token_url && CLIENT_CONFIG.response_type === 'code' && data.data.code !== undefined ) {
-                            doAuthenticateCode( data.data.code, callback );
+                            _doAuthenticateCode( data.data.code, callback );
                         } else if ( callback ) {
                             callback( null, data.data );
                         }
@@ -172,7 +181,13 @@ import DomHelper from './helper/dom-helper';
         element.addEventListener( 'message', actionCallback );
     }
 
-    function doAuthenticateCode( code, callback ) {
+    /**
+     * Perform request to token_url with code/grant_type/client_id/redirect_uri meant for auth code token exchange.
+     * @param code
+     * @param callback
+     * @private
+     */
+    function _doAuthenticateCode( code, callback ) {
         DomHelper.doPost( CONFIG.token_url, {
             'client_id': CLIENT_CONFIG.client_id,
             'grant_type': CONFIG.grant_type,
@@ -194,13 +209,16 @@ import DomHelper from './helper/dom-helper';
 
     /**
      * Public doConnect API function for starting a login session.
+     *
      * @param {Function} [callback]
      * @param {OIDCConnect.Configuration} [config]
      * @param {Function} [inlineOnLoadCallback]
      * @param {HTMLElement} [inlineElementID]
+     *
+     * @returns {Window|Element} returns the new window object if method is window, or iframe element if inline.
      */
     function doConnect(  { callback=null, config={}, inlineOnLoadCallback=null, inlineElementID=null } ) {
-        _doConnect( {
+        return _doConnect( {
             callback: callback,
             config: config,
             inlineElementID: inlineElementID,
@@ -210,11 +228,15 @@ import DomHelper from './helper/dom-helper';
 
     /**
      * Perform doConnect to OIDC with configuration.
+     *
      * @param {Function} [callback]
      * @param {OIDCConnect.Configuration} [config]
      * @param {Function} [inlineOnLoadCallback]
      * @param {String} inlineElementID
      * @param {Boolean} [isIgnoreWindow]
+     *
+     * @returns {Window|Element} returns the new window object if method is window, or iframe element if inline.
+     *
      * @private
      */
     function _doConnect( { callback, config = {}, inlineElementID, inlineOnLoadCallback, isIgnoreWindow } ) {
@@ -222,8 +244,8 @@ import DomHelper from './helper/dom-helper';
             return console.error( 'doConnect missing callback!' );
         }
 
-        const clientConfig = getUpdatedClientConfig( config );
-        const authorizeUrl = createAuthorizeClientUrl( clientConfig );
+        const clientConfig = _getUpdatedClientConfig( config );
+        const authorizeUrl = _createAuthorizeClientUrl( clientConfig );
 
         const method = ( config && config.method ) ? config.method : CONFIG.method;
         switch ( method ) {
@@ -248,18 +270,19 @@ import DomHelper from './helper/dom-helper';
                             `top=${windowTop}`
                         ].join( ',' ) );
 
-                    doHandlePostMessage( {
+                    _doHandlePostMessage( {
                         element: context,
                         loginWindow: loginWindow,
                         once: true,
                         callback: callback
                     } );
                 }
-                break;
+                loginWindow.focus();
+                return loginWindow;
             }
             case 'redirect': {
                 window.location.assign( authorizeUrl );
-                break;
+                return;
             }
             case 'inline': {
                 let iframeElement = document.createElement( 'iframe' );
@@ -280,7 +303,7 @@ import DomHelper from './helper/dom-helper';
                 }
                 inlineElement.appendChild( iframeElement );
 
-                doHandlePostMessage( {
+                _doHandlePostMessage( {
                     element: context,
                     loginWindow: null,
                     callback: callback,
@@ -288,7 +311,7 @@ import DomHelper from './helper/dom-helper';
                     inlineElement: inlineElement
                 } );
 
-                break;
+                return iframeElement;
             }
         }
 

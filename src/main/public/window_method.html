@@ -11,7 +11,7 @@
 
 <div class="container">
     <div class="row">
-        <div class="column" style="margin-top: 25%">
+        <div class="column" style="margin-top: 15%">
             <h3>BankID OIDC Connector</h3>
             <h4>Window mode example</h4>
             <pre><code>
@@ -57,7 +57,7 @@
 <script type="text/javascript">
     // Handle button click and start login
     function onOIDCButtonClick() {
-        window.OIDC.doConnect({
+        var loginWindow = window.OIDC.doConnect({
             // Add override config to doConnect call
             config: {
                 // Adds login_hint to Authorization call pre-selecting BID login method
@@ -70,6 +70,7 @@
                 console.log( data );
             }
         });
+        console.log( 'Got window object', loginWindow );
     }
 
     function onOIDCLoaded() {
