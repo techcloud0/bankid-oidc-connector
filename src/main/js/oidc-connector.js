@@ -44,6 +44,7 @@ import DomHelper from './helper/dom-helper';
 
 ( function ( context ) {
 
+    const TAG = 'OIDC-Connector';
     const VERSION = '1.2.0';
     const CLIENT_CONFIG = new OIDCConfig( {
         scope: 'openid',
@@ -240,8 +241,8 @@ import DomHelper from './helper/dom-helper';
      * @private
      */
     function _doConnect( { callback, config = {}, inlineElementID, inlineOnLoadCallback, isIgnoreWindow } ) {
-        if ( !callback ) {
-            return console.error( 'doConnect missing callback!' );
+        if ( CONFIG.method !== 'redirect' && !callback ) {
+            throw Error( `[${TAG}] doConnect - missing callback method. You need to provide a callback when using inline or window method.` );
         }
 
         const clientConfig = _getUpdatedClientConfig( config );
@@ -298,8 +299,7 @@ import DomHelper from './helper/dom-helper';
 
                 const inlineElement = document.getElementById( inlineElementID );
                 if ( !inlineElement ) {
-                    console.error( `doConnect inlineElement ${inlineElementID} not found` );
-                    return;
+                    throw Error( `[${TAG}] doConnect - inlineElement ${inlineElementID} not found.` );
                 }
                 inlineElement.appendChild( iframeElement );
 
@@ -329,13 +329,13 @@ import DomHelper from './helper/dom-helper';
         console.warning( 'doGetUserInfo is an experimental feature' );
 
         if ( !callback ) {
-            return console.error( 'doGetUserInfo missing callback!' );
+            throw Error( `[${TAG}] doGetUserInfo - missing callback!.` );
         }
         if ( !accessToken ) {
-            return console.error( 'doGetUserInfo missing accessToken!' );
+            throw Error( `[${TAG}] doGetUserInfo - missing accessToken!.` );
         }
         if ( !tokenType ) {
-            return console.error( 'tokenType missing accessToken!' );
+            throw Error( `[${TAG}] doGetUserInfo - missing tokenType!.` );
         }
 
         let headers = {};
@@ -366,9 +366,9 @@ import DomHelper from './helper/dom-helper';
     /**
      * @param {OIDCConnect.Configuration} config
      */
-    function doInit( config={} ) {
+    function doInit( config ) {
         if ( !config ) {
-            return console.error( ' doInit missing config object' );
+            throw Error( `[${TAG}] doInit - missing configuration. You need to pass a configuration object.` );
         }
 
         CONFIG.oauth_url = config.oauth_url || CONFIG.oauth_url;
@@ -378,12 +378,14 @@ import DomHelper from './helper/dom-helper';
         CONFIG.userinfo_url = config.userinfo_url || CONFIG.userinfo_url;
         CONFIG.storage_key_access += '-' + config.client_id;
 
-        if ( ['window', 'redirect', 'inline'].indexOf( CONFIG.method ) === -1 ) {
-            return console.error( 'doInit bad method' );
+        const allowedMethods = ['window', 'redirect', 'inline'];
+
+        if ( allowedMethods.indexOf( CONFIG.method ) === -1 ) {
+            throw Error( `[${TAG}] doInit - bad method. Use one of ${allowedMethods.toString()}.` );
         }
 
         if ( !config.hasOwnProperty( 'client_id' ) ) {
-            return console.error( 'doInit missing client_id' );
+            throw Error( `[${TAG}] doInit - missing required parameter client_id.` );
         }
 
         CLIENT_CONFIG.login_hint = config.login_hint || CLIENT_CONFIG.login_hint;
