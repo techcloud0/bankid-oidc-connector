@@ -23,23 +23,6 @@ module.exports = {
                     presets: ['es2015'],
                     plugins: ['transform-object-assign']
                 }
-            },
-            {
-                test: /\.js$/,
-                include: /(\.polyfill\.js)/,
-                loader: 'babel-loader',
-                query: {
-                    presets: ['es2015']
-                }
-            },
-            {
-                test: /\.html$/,
-                loader: 'html-loader',
-                options: {
-                    minimize: true,
-                    removeComments: true,
-                    exportAsEs6Default: true
-                }
             }
         ]
     },

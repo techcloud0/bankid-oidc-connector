@@ -6,6 +6,7 @@ const gulp = require( 'gulp' );
 const gutil = require( 'gulp-util' );
 const path = require( 'path' );
 const del = require( 'del' );
+const UglifyJsPlugin = require( 'uglifyjs-webpack-plugin' );
 
 const WEBPACK_CONFIG = require( '../config/webpack.config' );
 
@@ -53,17 +54,14 @@ gulp.task( 'connector:js:dist', callback => {
     config.output.path = DIST_OUTPUT_FOLDER;
 
     let uglifyConfig = {
-        mangle: false,
-        // beautify: true,
-        comments: false,
-        compress: true,
-        sourceMap: false
+        compress: {
+            drop_console: true
+        }
     };
 
     config.plugins = config.plugins.concat(
-        new webpack.optimize.UglifyJsPlugin( uglifyConfig )
+        new UglifyJsPlugin( { uglifyOptions: uglifyConfig } )
     );
-
     webpack( config, ( err, stats ) => {
         if ( err ) {
             throw new gutil.PluginError( `[${TAG}]`, err );
