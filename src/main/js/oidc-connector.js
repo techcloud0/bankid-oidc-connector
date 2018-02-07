@@ -63,8 +63,7 @@ import DomHelper from './helper/dom-helper';
         oauth_url: '',
         grant_type: 'authorization_code',
         userinfo_url: '',
-        token_url: '',
-        devMode: true // Set this to true if you need to set application_name manually
+        token_url: ''
     } );
 
     /**
@@ -75,6 +74,17 @@ import DomHelper from './helper/dom-helper';
      */
     function getUpdatedClientConfig( override_config = {} ) {
         return Object.assign( CLIENT_CONFIG, override_config );
+    }
+
+    /**
+     * Generate the URL to the OAUTH2 Authorize endpoint from oauth_url and configuration parameters
+     *
+     * @param {OIDCConnect.Configuration} clientConfig
+     * @return {string} url to OAUTH2 Authorize Endpoint
+     */
+    function createAuthorizeClientUrl( clientConfig ) {
+        const objectUrl = DomHelper.serializeConfigToURL( clientConfig );
+        return `${CONFIG.oauth_url}?${objectUrl}`;
     }
 
     /**
@@ -90,12 +100,6 @@ import DomHelper from './helper/dom-helper';
      * Apply polyfills for cross-browser functionality.
      */
     function doPolyfill() {
-        if ( !Array.from ) {
-            Array.from = function ( object ) {
-                return [].slice.call( object );
-            };
-        }
-
         // custom event polyfill
         if ( typeof window.CustomEvent === 'function' ) {
             return false;
@@ -186,17 +190,6 @@ import DomHelper from './helper/dom-helper';
                 }
             }
         } );
-    }
-
-    /**
-     * Generate the URL to the OAUTH2 Authorize endpoint from oauth_url and configuration parameters
-     *
-     * @param {OIDCConnect.Configuration} clientConfig
-     * @return {string} url to OAUTH2 Authorize Endpoint
-     */
-    function createAuthorizeClientUrl( clientConfig ) {
-        const objectUrl = DomHelper.serializeConfigToURL( clientConfig );
-        return `${CONFIG.oauth_url}?${objectUrl}`;
     }
 
     /**
