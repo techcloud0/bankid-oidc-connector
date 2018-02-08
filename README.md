@@ -4,7 +4,7 @@ The BankID OIDC Connector provides a Javascript API to easily integrate with the
 
 ## Documentation
 
-See official [documentation](https://confluence.bankidnorge.no/confluence/pdoidcl) from OIDC Provider BankID.
+See official [documentation](https://confluence.bankidnorge.no/confluence/pdoidcl/technical-documentation/js-connector) from OIDC Provider BankID.
 
 ## Usage
 
@@ -45,7 +45,7 @@ document.querySelector('button').addEventListener('click', function() {
 * By default, the OIDC connector will use redirect mode. Change `method` parameter to `window`, or `inline` for other modes.
 * You can add a `login_hint` parameter to `OIDC.doInit({ login_hint: 'XID' })` or `OIDC.doConnect()`
 
-See more examples under `src/main/public/` or check out the [examples](https://confluence.bankidnorge.no/confluence/pdoidcl/js-connector/examples) page in the documentation.
+See more examples under `src/main/public/` or check out the [examples](https://confluence.bankidnorge.no/confluence/pdoidcl/technical-documentation/js-connector/examples) page in the documentation.
 
 ## Development
 
@@ -90,7 +90,7 @@ In order to enrich the server with certificate info or to disable HTTPS, you nee
 ### Local proxy for Token/Userinfo exchange
  
 The local development node server can act as a proxy to the Token and Userinfo endpoints when using the experimental
-features in the OIDC Connector as [explained here](https://confluence.bankidnorge.no/confluence/pdoidcl/js-connector/back-end-implementation).
+features in the OIDC Connector as [explained here](https://confluence.bankidnorge.no/confluence/pdoidcl/technical-documentation/js-connector/back-end-implementation).
 
 The provided node server has implemented the necessary backend features to make the Token and Userinfo calls on behalf of the OIDC connector
 running on the client-side.

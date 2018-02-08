@@ -24,4 +24,4 @@ See README.md
 Documentation
 -------------
 
-Official documentation: https://confluence.bankidnorge.no/confluence/pdoidcl
+Official documentation: https://confluence.bankidnorge.no/confluence/pdoidcl/technical-documentation/js-connector
