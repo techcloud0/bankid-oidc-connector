@@ -5,7 +5,7 @@
   "author": "BankID",
   "license": "Apache-2.0",
   "scripts": {
-    "start": "gulp connector:server",
+    "start": "gulp",
     "test": "gulp connector:test"
   },
   "port": 3000,
