@@ -376,7 +376,6 @@ import DomHelper from './helper/dom-helper';
         CONFIG.method = config.method || CONFIG.method;
         CONFIG.token_url = config.token_url || CONFIG.token_url;
         CONFIG.userinfo_url = config.userinfo_url || CONFIG.userinfo_url;
-        CONFIG.storage_key_access += '-' + config.client_id;
 
         const allowedMethods = ['window', 'redirect', 'inline'];
 
@@ -400,8 +399,6 @@ import DomHelper from './helper/dom-helper';
         CLIENT_CONFIG.ui_locales = config.ui_locales || CLIENT_CONFIG.ui_locales;
         CLIENT_CONFIG.acr_values = config.acr_values || CLIENT_CONFIG.acr_values;
         CLIENT_CONFIG.nonce = config.nonce || CLIENT_CONFIG.nonce;
-
-        Object.assign( CLIENT_CONFIG, config );
     }
 
     context.OIDC = {
@@ -410,5 +407,5 @@ import DomHelper from './helper/dom-helper';
         doGetUserInfo: doGetUserInfo
     };
 
-    context.addEventListener( 'load', onLoad, false );
+    onLoad();
 } )( window );
