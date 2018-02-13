@@ -9,16 +9,23 @@ const del = require( 'del' );
 const UglifyJsPlugin = require( 'uglifyjs-webpack-plugin' );
 
 const WEBPACK_CONFIG = require( '../config/webpack.config' );
-
 const ROOT = path.resolve( __dirname, '../../../' );
+
 const DIST_FOLDER = path.resolve( ROOT, 'dist' );
 const DIST_OUTPUT_FOLDER = path.resolve( DIST_FOLDER, 'js' );
+const PACKAGE_JSON = require( path.resolve( ROOT, 'package.json' ) );
 
-// init webpack compiler
-const compiler = webpack( WEBPACK_CONFIG );
+const devConfig = Object.create( WEBPACK_CONFIG );
+devConfig.plugins = devConfig.plugins.concat(
+    new webpack.DefinePlugin( {
+        VERSION: JSON.stringify( PACKAGE_JSON.version ),
+        OAUTH_URL: JSON.stringify( '' )
+    } )
+);
 
 // register tasks
 gulp.task( 'connector:js', callback => {
+    const compiler = webpack( devConfig );
     // Run webpack
     compiler.run( ( err, stats ) => {
         if ( err ) {
@@ -35,6 +42,7 @@ gulp.task( 'connector:js', callback => {
 } );
 
 gulp.task( 'connector:js:watch', callback => {
+    const compiler = webpack( devConfig );
     compiler.watch( {
         aggregateTimeout: 300
     }, ( err, stats ) => {
@@ -60,7 +68,11 @@ gulp.task( 'connector:js:dist', callback => {
     };
 
     config.plugins = config.plugins.concat(
-        new UglifyJsPlugin( { uglifyOptions: uglifyConfig } )
+        new UglifyJsPlugin( { uglifyOptions: uglifyConfig } ),
+        new webpack.DefinePlugin( {
+            VERSION: JSON.stringify( PACKAGE_JSON.version ),
+            OAUTH_URL: JSON.stringify( '' )
+        } )
     );
     webpack( config, ( err, stats ) => {
         if ( err ) {

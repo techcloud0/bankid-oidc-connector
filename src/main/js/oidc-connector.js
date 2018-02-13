@@ -43,9 +43,7 @@ import ConnectorConfig from './config/connector.config';
 import DomHelper from './helper/dom-helper';
 
 ( function ( context ) {
-
     const TAG = 'OIDC-Connector';
-    const VERSION = '1.2.0';
     const CLIENT_CONFIG = new OIDCConfig( {
         scope: 'openid',
         response_mode: 'query',
@@ -61,7 +59,8 @@ import DomHelper from './helper/dom-helper';
     } );
     const CONFIG = new ConnectorConfig( {
         method: 'redirect',
-        oauth_url: '',
+        // eslint-disable-next-line no-undef
+        oauth_url: OAUTH_URL,
         grant_type: 'authorization_code',
         userinfo_url: '',
         token_url: ''
@@ -96,7 +95,6 @@ import DomHelper from './helper/dom-helper';
     function onLoad() {
         _doPolyfill();
         _doSendLoadedEvent();
-        console.log( 'Loaded OIDC Connector v' + VERSION );
     }
 
     /**
@@ -404,7 +402,9 @@ import DomHelper from './helper/dom-helper';
     context.OIDC = {
         doInit: doInit,
         doConnect: doConnect,
-        doGetUserInfo: doGetUserInfo
+        doGetUserInfo: doGetUserInfo,
+        // eslint-disable-next-line no-undef
+        VERSION: VERSION
     };
 
     onLoad();
