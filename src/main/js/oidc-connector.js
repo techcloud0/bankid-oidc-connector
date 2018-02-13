@@ -399,6 +399,13 @@ import DomHelper from './helper/dom-helper';
         CLIENT_CONFIG.nonce = config.nonce || CLIENT_CONFIG.nonce;
     }
 
+    /**
+     * Trigger a cross-browser onload event when DOM is loaded.
+     */
+    function load() {
+        context[ context.addEventListener ? 'addEventListener' : 'attachEvent' ]( context.addEventListener ? 'load' : 'onload', onLoad, false );
+    }
+
     context.OIDC = {
         doInit: doInit,
         doConnect: doConnect,
@@ -407,5 +414,5 @@ import DomHelper from './helper/dom-helper';
         VERSION: VERSION
     };
 
-    onLoad();
+    load();
 } )( window );
