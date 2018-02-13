@@ -66,6 +66,8 @@ import DomHelper from './helper/dom-helper';
         token_url: ''
     } );
 
+    let loginWindow;
+
     /**
      * Return the merged configuration object with given overrides.
      *
@@ -249,12 +251,17 @@ import DomHelper from './helper/dom-helper';
         const method = ( config && config.method ) ? config.method : CONFIG.method;
         switch ( method ) {
             case 'window': {
-                let loginWindow;
                 if ( !isIgnoreWindow ) {
                     const windowWidth = 500;
                     const windowHeight = 500;
                     const windowLeft = window.top.outerWidth / 2 + window.top.screenX - ( windowWidth / 2 );
                     const windowTop = window.top.outerHeight / 2 + window.top.screenY - ( windowHeight / 2 );
+
+                    // We need to close the window before reopening to trigger focus in a cross-device compatible way
+                    if ( loginWindow ) {
+                        loginWindow.close();
+                    }
+
                     loginWindow = window.open( authorizeUrl, 'login',
                         [
                             'toolbar=no',
