@@ -12,7 +12,7 @@ requireDir( path.resolve( __dirname, 'src/tools/gulp' ), {
 gulp.task( 'connector', ['connector:js:watch'] );
 
 gulp.task( 'connector:dist', ( cb ) => {
-    runSequence( 'connector:clean:dist', ['connector:js:dist'], cb );
+    runSequence( 'connector:clean:dist', ['connector:js:dist', 'connector:docs:dist'], cb );
 } );
 
 gulp.task( 'connector:test', ['connector:test:unit'] );
