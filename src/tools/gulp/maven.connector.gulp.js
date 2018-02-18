@@ -1,10 +1,10 @@
 const gulp = require( 'gulp' );
 const path = require( 'upath' );
+const runSequence = require( 'run-sequence' );
 
 const ROOT = path.resolve( __dirname, '../../../' );
 
 const maven = require( 'maven-deploy' );
-
 
 /**
  * Deploys a snapshot version of the next release (that is version in package.json + 1) in the
