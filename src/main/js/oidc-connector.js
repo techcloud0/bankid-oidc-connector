@@ -3,9 +3,7 @@
  */
 
 /**
- * @typedef {Object} OIDCConnect.Configuration
- * @property {String} oauth_url
- * @property {String} method
+ * @typedef {Object} OIDCConnect.ConnectConfiguration
  * @property {String} client_id
  * @property {String} login_hint
  * @property {String} scope
@@ -25,12 +23,45 @@
  */
 
 /**
+ * @typedef {Object} OIDCConnect.InitConfiguration
+ * @property {String} grant_type
+ * @property {String} token_url
+ * @property {String} userinfo_url
+ * @property {String} oauth_url
+ * @property {String} method
+ * @property {String} client_id
+ * @property {String} login_hint
+ * @property {String} scope
+ * @property {String} response_mode
+ * @property {String} response_type
+ * @property {String} grant_type
+ * @property {String} redirect_uri
+ * @property {String} ui_locales
+ * @property {String} acr_values
+ * @property {String} state
+ * @property {String} nonce
+ * @property {String} id_token_hint
+ * @property {String} prompt
+ * @memberOf OIDCConnect
+ */
+
+/**
  * @typedef {Object} OIDCConnect.TokenResult
  * @property {String} access_token
  * @property {String} token_type
  * @property {Number} expires_in
  * @property {String} scope
  * @property {String} id_token
+ * @memberOf OIDCConnect
+ */
+
+
+/**
+ * @typedef {Object} OIDCConnect.doConnectParameters
+ * @property {Function} [callback]
+ * @property {OIDCConnect.ConnectConfiguration} [config]
+ * @property {Function} [inlineOnLoadCallback]
+ * @property {HTMLElement} [inlineElementID]
  * @memberOf OIDCConnect
  */
 
@@ -71,8 +102,8 @@ import DomHelper from './helper/dom-helper';
     /**
      * Return the merged configuration object with given overrides.
      *
-     * @param override_config
-     * @return {OIDCConnect.Configuration} configuration object
+     * @param {OIDCConnect.ConnectConfiguration} override_config
+     * @return {OIDCConnect.ConnectConfiguration} configuration object
      * @private
      */
     function _getUpdatedClientConfig( override_config = {} ) {
@@ -82,7 +113,7 @@ import DomHelper from './helper/dom-helper';
     /**
      * Generate the URL to the OAUTH2 Authorize endpoint from oauth_url and configuration parameters
      *
-     * @param {OIDCConnect.Configuration} clientConfig
+     * @param {OIDCConnect.ConnectConfiguration} clientConfig
      * @return {string} url to OAUTH2 Authorize Endpoint
      * @private
      */
@@ -209,14 +240,10 @@ import DomHelper from './helper/dom-helper';
     }
 
     /**
-     * Public doConnect API function for starting a login session.
-     *
-     * @param {Function} [callback]
-     * @param {OIDCConnect.Configuration} [config]
-     * @param {Function} [inlineOnLoadCallback]
-     * @param {HTMLElement} [inlineElementID]
-     *
+     * Start a login session.
+     * @param {OIDCConnect.doConnectParameters}
      * @returns {Window|Element} returns the new window object if method is window, or iframe element if inline.
+     * @memberOf OIDCConnect
      */
     function doConnect(  { callback=null, config={}, inlineOnLoadCallback=null, inlineElementID=null } ) {
         const clientConfig = _getUpdatedClientConfig( config );
@@ -342,7 +369,10 @@ import DomHelper from './helper/dom-helper';
     }
 
     /**
-     * @param {OIDCConnect.Configuration} config
+     * Set parameters used in doConnect calls.
+     * @param {OIDCConnect.InitConfiguration} config
+     * @return void
+     * @memberOf OIDCConnect
      */
     function doInit( config ) {
         if ( !config ) {
@@ -387,8 +417,27 @@ import DomHelper from './helper/dom-helper';
     }
 
     context.OIDC = {
+        /**
+         * Set parameters used in doConnect calls.
+         * @param {OIDCConnect.InitConfiguration} config
+         */
         doInit: doInit,
+
+        /**
+         * Start a login session.
+         * @param {OIDCConnect.doConnectParameters}
+         * @returns {Window|Element} returns the new window object if method is window, or iframe element if inline.
+         */
         doConnect: doConnect,
+
+        /**
+         * Fetch userinfo from userinfo endpoint (Experimental feature).
+         * @callback OIDCConnect.GetUserInfoCallback
+         * @param {Function|OIDCConnect.GetUserInfoCallback} callback
+         * @param {String} accessToken
+         * @param {String} tokenType
+         * @param {String} responseType
+         */
         doGetUserInfo: doGetUserInfo,
         // eslint-disable-next-line no-undef
         VERSION: VERSION
