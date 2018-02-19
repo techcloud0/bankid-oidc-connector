@@ -219,70 +219,43 @@ import DomHelper from './helper/dom-helper';
      * @returns {Window|Element} returns the new window object if method is window, or iframe element if inline.
      */
     function doConnect(  { callback=null, config={}, inlineOnLoadCallback=null, inlineElementID=null } ) {
-        return _doConnect( {
-            callback: callback,
-            config: config,
-            inlineElementID: inlineElementID,
-            inlineOnLoadCallback: inlineOnLoadCallback
-        } );
-    }
-
-    /**
-     * Perform doConnect to OIDC with configuration.
-     *
-     * @param {Function} [callback]
-     * @param {OIDCConnect.Configuration} [config]
-     * @param {Function} [inlineOnLoadCallback]
-     * @param {String} inlineElementID
-     * @param {Boolean} [isIgnoreWindow]
-     *
-     * @returns {Window|Element} returns the new window object if method is window, or iframe element if inline.
-     *
-     * @private
-     */
-    function _doConnect( { callback, config = {}, inlineElementID, inlineOnLoadCallback, isIgnoreWindow } ) {
-        if ( CONFIG.method !== 'redirect' && !callback ) {
-            throw Error( `[${TAG}] doConnect - missing callback method. You need to provide a callback when using inline or window method.` );
-        }
-
         const clientConfig = _getUpdatedClientConfig( config );
         const authorizeUrl = _createAuthorizeClientUrl( clientConfig );
 
         const method = ( config && config.method ) ? config.method : CONFIG.method;
         switch ( method ) {
             case 'window': {
-                if ( !isIgnoreWindow ) {
-                    const windowWidth = 500;
-                    const windowHeight = 500;
-                    const windowLeft = window.top.outerWidth / 2 + window.top.screenX - ( windowWidth / 2 );
-                    const windowTop = window.top.outerHeight / 2 + window.top.screenY - ( windowHeight / 2 );
+                const windowWidth = 500;
+                const windowHeight = 500;
+                const windowLeft = window.top.outerWidth / 2 + window.top.screenX - ( windowWidth / 2 );
+                const windowTop = window.top.outerHeight / 2 + window.top.screenY - ( windowHeight / 2 );
 
-                    // We need to close the window before reopening to trigger focus in a cross-device compatible way
-                    if ( loginWindow ) {
-                        loginWindow.close();
-                    }
-
-                    loginWindow = window.open( authorizeUrl, 'login',
-                        [
-                            'toolbar=no',
-                            'location=no',
-                            'status=no',
-                            'menubar=no',
-                            'scrollbars=yes',
-                            'resizable=yes',
-                            `width=${windowWidth}px`,
-                            `height=${windowHeight}px`,
-                            `left=${windowLeft}`,
-                            `top=${windowTop}`
-                        ].join( ',' ) );
-
-                    _doHandlePostMessage( {
-                        element: context,
-                        loginWindow: loginWindow,
-                        once: true,
-                        callback: callback
-                    } );
+                // We need to close the window before reopening to trigger focus in a cross-device compatible way
+                if ( loginWindow ) {
+                    loginWindow.close();
                 }
+
+                loginWindow = window.open( authorizeUrl, 'login',
+                    [
+                        'toolbar=no',
+                        'location=no',
+                        'status=no',
+                        'menubar=no',
+                        'scrollbars=yes',
+                        'resizable=yes',
+                        `width=${windowWidth}px`,
+                        `height=${windowHeight}px`,
+                        `left=${windowLeft}`,
+                        `top=${windowTop}`
+                    ].join( ',' ) );
+
+                _doHandlePostMessage( {
+                    element: context,
+                    loginWindow: loginWindow,
+                    once: true,
+                    callback: callback
+                } );
+
                 loginWindow.focus();
                 return loginWindow;
             }
