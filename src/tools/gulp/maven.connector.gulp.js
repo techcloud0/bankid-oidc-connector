@@ -1,6 +1,5 @@
 const gulp = require( 'gulp' );
 const path = require( 'upath' );
-const runSequence = require( 'run-sequence' );
 
 const ROOT = path.resolve( __dirname, '../../../' );
 
@@ -12,7 +11,7 @@ const maven = require( 'maven-deploy' );
  * <br>
  * Uses this plugin: https://github.com/finn-no/maven-deploy
  */
-gulp.task( 'connector:dist:deploy', ['connector:dist'], () => {
+gulp.task( 'connector:dist:deploy', ['connector:dist:package:preprod'], () => {
     const maven_config = require( path.resolve( ROOT, './maven-config.json' ) );
     maven.config( maven_config );
     maven.deploy( 'bankid-public-snapshot', true );
@@ -21,7 +20,7 @@ gulp.task( 'connector:dist:deploy', ['connector:dist'], () => {
 /**
  * Deploy a release version of bankid-oidc-connector with the version given in package.json
  */
-gulp.task( 'connector:dist:release', ['connector:dist'], () => {
+gulp.task( 'connector:dist:release', ['connector:dist:package'], () => {
     const maven_config = require( path.resolve( ROOT, './maven-config.json' ) );
     maven.config( maven_config );
     maven.deploy( 'bankid-public' );
