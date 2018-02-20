@@ -1,7 +1,7 @@
-BankID OIDC Connector v1.2.0
+BankID OIDC Connector v1.3.0
 ============================
 
-BankID OIDC Connector v1.2.0 was released on January 29, 2018.
+BankID OIDC Connector v1.3.0 was released on February 20, 2018.
 
 About
 -----
@@ -11,9 +11,12 @@ BankID OIDC connector is a library for easy integration of BankID authentication
 What's new
 ----------
 
-- Development server now serves on HTTPS by default
+- Default URL to Authorize Endpoint is now built into the connector.
+- No longer prints version to console log. It is now available via `OIDC.VERSION`.
+- No longer requires passing `callback` to `doConnect` function.
+- Fixed a problem with window focus in Safari on Mobile
+- Removed more unused code
 - Improved README
-- Revamped examples and location in source tree
 
 
 Installation

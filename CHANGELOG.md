@@ -1,5 +1,19 @@
 # Changelog - BankID OIDC Connector
 
+## [1.3.0] - 20.02.2018
+
+### Added
+- Default URL to Authorize Endpoint is now built into the connector.
+
+### Updated
+- No longer prints version to console log. It is now available via `OIDC.VERSION`.
+- No longer requires passing `callback` to `doConnect` function.
+- Fixed a problem with window focus in Safari on Mobile
+- Improved README
+
+### Removed
+- Removed more unused code
+
 ## [1.2.0] - 29.01.2018
 
 ### Updated
