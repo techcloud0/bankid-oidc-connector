@@ -10,40 +10,53 @@ See official [documentation](https://confluence.bankidnorge.no/confluence/pdoidc
 
 A simple example on how to connect to an OIDC provider like BankID:
 
-```javascript
-// Listen for loaded event
-document.body.addEventListener( 'oidc-connector-loaded', function() {
-    window.OIDC.doInit({
-        // URL to OIDC service
-        oauth_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/protocol/openid-connect/auth',
-        // Merchant given client ID on the OIDC service
-        // TODO: Replace this with your own!
-        client_id: 'your_client_id',
-        // Your callback URL that will receive the Authorization Grant response
-        // TODO: Replace this with your own!
-        redirect_uri: 'https://yourdomain.com/oidc/callback',
-        // Open the OIDC session in a popup window
-        method: 'window'
-    });
-}, false);
-
-// Then on some login button click event, for example:
-document.querySelector('button').addEventListener('click', function() {
-    window.OIDC.doConnect( {
-        callback: function( err, data ) {
-            if ( err ) {
-                console.warn( 'OIDC login error: ', err );
-                return;
-            }
-            console.log( 'OIDC login finished. Received: ', data );
-        }
-    });
-}, false);
+```html
+<html>
+ <head>
+   <script src="https://oidc.bankidapis.no/js-connect/v1/js/connector.bundle.min.js"></script>
+   <script>
+    function init() {
+        OIDC.doInit({
+            // Merchant given client ID on the OIDC service
+            // TODO: Replace this with your own!
+            client_id: 'your_client_id',
+            // Your callback URL that will receive the Authorization Grant response
+            // TODO: Replace this with your own!
+            redirect_uri: 'https://yourdomain.com/oidc/callback',
+        });
+    };
+    init();
+   </script>
+  </head>
+  <body>
+    <button>Login</button>
+    <script>
+        document.querySelector('button').addEventListener('click', function() {
+            OIDC.doConnect( {} );
+        }, false);
+    </script>
+  </body>
+</html>
 ```
 
 * **NOTE: You need to replace `client_id` and `redirect_uri` with your own values.**
 * By default, the OIDC connector will use redirect mode. Change `method` parameter to `window`, or `inline` for other modes.
-* You can add a `login_hint` parameter to `OIDC.doInit({ login_hint: 'XID' })` or `OIDC.doConnect()`
+
+### Login hint
+
+You can for example use `login_hint` to select authentication method.
+
+Specify it in the `doInit` call to apply it globally:
+```javascript
+OIDC.doInit( { login_hint: 'XID', ... } )
+```
+
+or, pass it in `doConnect` calls:
+```javascript
+OIDC.doConnect( { config: { login_hint: 'XID' } } )
+```
+
+Other parameters can be passed in this way, see [API Reference](https://confluence.bankidnorge.no/confluence/pdoidcl/technical-documentation/js-connector/api-reference) for more information.
 
 See more examples under `src/main/public/` or check out the [examples](https://confluence.bankidnorge.no/confluence/pdoidcl/technical-documentation/js-connector/examples) page in the documentation.
 
