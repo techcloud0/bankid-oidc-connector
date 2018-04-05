@@ -12,6 +12,8 @@ RUN echo '{\n\
 }\n'\
 > /usr/src/app/config.custom.json
 
+RUN cp dist/js/connector.bundle.min.js src/main/public/js/
+
 EXPOSE 3000
 
 CMD ["npm","start"]
