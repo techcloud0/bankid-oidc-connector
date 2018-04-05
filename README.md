@@ -17,6 +17,9 @@ A simple example on how to connect to an OIDC provider like BankID:
    <script>
     function init() {
         OIDC.doInit({
+            // URL to OIDC authorization_endpoint
+            // TODO: Replace this with the correct URL. See official documentation.
+            oauth_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/protocol/openid-connect/auth',
             // Merchant given client ID on the OIDC service
             // TODO: Replace this with your own!
             client_id: 'your_client_id',
