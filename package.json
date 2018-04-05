@@ -32,7 +32,7 @@
     "request-promise": "^4.2.2",
     "require-dir-all": "^0.4.12",
     "run-sequence": "^2.1.0",
-    "uglifyjs-webpack-plugin": "^1.1.8",
+    "uglifyjs-webpack-plugin": "^1.2.4",
     "upath": "^1.0.0",
     "webpack": "^3.3.0"
   }
