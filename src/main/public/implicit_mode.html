@@ -37,7 +37,7 @@
         // Initialise OIDC with required parameters
         window.OIDC.doInit({
             // URL to OIDC service
-            oauth_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/protocol/openid-connect/auth',
+            oidc_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/.well-known/openid-configuration',
             // Merchant given client ID on the OIDC service
             // TODO: Replace this with your own!
             client_id: 'your_client_id',
@@ -82,7 +82,7 @@
         // Initialise OIDC with required parameters
         window.OIDC.doInit({
             // URL to OIDC service
-            oauth_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/protocol/openid-connect/auth',
+            oidc_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/.well-known/openid-configuration',
             // Merchant given client ID on the OIDC service
             // TODO: Replace this with your own!
             client_id: 'your_client_id',
