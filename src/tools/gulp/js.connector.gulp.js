@@ -22,7 +22,7 @@ function getDevConfig() {
     devConfig.plugins = devConfig.plugins.concat(
         new webpack.DefinePlugin( {
             VERSION: JSON.stringify( PACKAGE_JSON.version ),
-            OAUTH_URL: JSON.stringify( '' )
+            OIDC_URL: JSON.stringify( '' )
         } )
     );
     return devConfig;
@@ -52,7 +52,7 @@ function getDistConfig( type ) {
         new UglifyJsPlugin( { uglifyOptions: uglifyConfig } ),
         new webpack.DefinePlugin( {
             VERSION: JSON.stringify( PACKAGE_JSON.version ),
-            OAUTH_URL: JSON.stringify( oauthUrl )
+            OIDC_URL: JSON.stringify( oauthUrl )
         } )
     );
     return distConfig;
@@ -99,12 +99,12 @@ gulp.task( 'connector:js:dist', callback => {
 } );
 
 gulp.task( 'connector:js:dist:prod', callback => {
-    const compiler = webpack( getDistConfig( 'prod-auth-url' ) );
+    const compiler = webpack( getDistConfig( 'prod-oidc-url' ) );
     runWebPack( compiler, callback );
 } );
 
 gulp.task( 'connector:js:dist:preprod', callback => {
-    const compiler = webpack( getDistConfig( 'preprod-auth-url' ) );
+    const compiler = webpack( getDistConfig( 'preprod-oidc-url' ) );
     runWebPack( compiler, callback );
 } );
 

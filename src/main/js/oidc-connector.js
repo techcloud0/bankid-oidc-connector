@@ -27,6 +27,7 @@
  * @property {String} grant_type
  * @property {String} token_url
  * @property {String} userinfo_url
+ * @property {String} oidc_url
  * @property {String} oauth_url
  * @property {String} method
  * @property {String} client_id
@@ -68,34 +69,13 @@
 import EVENT_CONSTANTS from './constants/event.constants';
 import XDM_CONSTANTS from './constants/xdm.constants';
 
-import OIDCConfig from './config/oidc.config';
-import ConnectorConfig from './config/connector.config';
+import CLIENT_CONFIG from './config/oidc.config';
+import CONFIG from './config/connector.config';
 
 import DomHelper from './helper/dom-helper';
 
 ( function ( context ) {
     const TAG = 'OIDC-Connector';
-    const CLIENT_CONFIG = new OIDCConfig( {
-        scope: 'openid',
-        response_mode: 'query',
-        response_type: 'code',
-        redirect_uri: '',
-        ui_locales: 'nb',
-        acr_values: '4',
-        nonce: DomHelper.createRandomHexString(),
-        state: 'untouched',
-        login_hint: '',
-        id_token_hint: '',
-        prompt: ''
-    } );
-    const CONFIG = new ConnectorConfig( {
-        method: 'redirect',
-        // eslint-disable-next-line no-undef
-        oauth_url: OAUTH_URL,
-        grant_type: 'authorization_code',
-        userinfo_url: '',
-        token_url: ''
-    } );
 
     let loginWindow;
 
@@ -106,8 +86,33 @@ import DomHelper from './helper/dom-helper';
      * @return {OIDCConnect.ConnectConfiguration} configuration object
      * @private
      */
-    function _getUpdatedClientConfig( override_config = {} ) {
+    function getUpdatedClientConfig( override_config = {} ) {
         return Object.assign( CLIENT_CONFIG, override_config );
+    }
+
+    /**
+     * Makes a GET request to the provided OpenID Configuration. Calls callback function when completed.
+     *
+     * @param url
+     * @param callback
+     * @private
+     */
+    function doGetOIDCConfig( url, callback ) {
+        if ( url ) {
+            DomHelper.doGet( url, ( err, data ) => {
+                if ( err ) {
+                    console.error( err );
+                }
+
+                if ( data && data.authorization_endpoint ) {
+                    CONFIG.oauth_url = data.authorization_endpoint;
+                }
+
+                callback();
+            } );
+        } else {
+            callback();
+        }
     }
 
     /**
@@ -117,7 +122,10 @@ import DomHelper from './helper/dom-helper';
      * @return {string} url to OAUTH2 Authorize Endpoint
      * @private
      */
-    function _createAuthorizeClientUrl( clientConfig ) {
+    function createAuthorizeClientUrl( clientConfig ) {
+        if ( !CONFIG.oauth_url ) {
+            throw Error( `[${TAG}] doConnect - URL to authorization_endpoint missing. Pass oidc_url in OIDC.doInit() to a valid openid-configuration or pass oauth_url (authorization_endpoint) directly to OIDC.doInit().` );
+        }
         const objectUrl = DomHelper.serializeConfigToURL( clientConfig );
         return `${CONFIG.oauth_url}?${objectUrl}`;
     }
@@ -126,18 +134,22 @@ import DomHelper from './helper/dom-helper';
      * OIDC Connector onLoad handler.
      */
     function onLoad() {
-        _doPolyfill();
-        _doSendLoadedEvent();
+        try {
+            doPolyfill( doGetOIDCConfig.bind( null, CONFIG.oidc_url, doSendLoadedEvent ) );
+        } catch ( e ) {
+            doSendLoadedEvent();
+        }
     }
 
     /**
      * Apply polyfills for cross-browser functionality.
      * @private
      */
-    function _doPolyfill() {
+    function doPolyfill( callback ) {
         // custom event polyfill
         if ( typeof window.CustomEvent === 'function' ) {
-            return false;
+            callback();
+            return;
         }
 
         function CustomEvent( event, params ) {
@@ -149,13 +161,14 @@ import DomHelper from './helper/dom-helper';
 
         CustomEvent.prototype = window.Event.prototype;
         window.CustomEvent = CustomEvent;
+        callback();
     }
 
     /**
      * Dispatch event that the connector is loaded.
      * @private
      */
-    function _doSendLoadedEvent() {
+    function doSendLoadedEvent() {
         document.body.dispatchEvent( new window.CustomEvent( EVENT_CONSTANTS.LOADED_EVENT ) );
     }
 
@@ -169,7 +182,7 @@ import DomHelper from './helper/dom-helper';
      * @param inlineElement
      * @private
      */
-    function _doHandlePostMessage( { element, loginWindow, callback, once, inlineElement = null } ) {
+    function doHandlePostMessage( { element, loginWindow, callback, once, inlineElement = null } ) {
 
         function actionCallback( event ) {
             let data = {};
@@ -198,7 +211,7 @@ import DomHelper from './helper/dom-helper';
                     }
                     else {
                         if ( CONFIG.token_url && CLIENT_CONFIG.response_type === 'code' && data.data.code !== undefined ) {
-                            _doAuthenticateCode( data.data.code, callback );
+                            doAuthenticateCode( data.data.code, callback );
                         } else if ( callback ) {
                             callback( null, data.data );
                         }
@@ -219,7 +232,7 @@ import DomHelper from './helper/dom-helper';
      * @param callback
      * @private
      */
-    function _doAuthenticateCode( code, callback ) {
+    function doAuthenticateCode( code, callback ) {
         DomHelper.doPost( CONFIG.token_url, {
             'client_id': CLIENT_CONFIG.client_id,
             'grant_type': CONFIG.grant_type,
@@ -246,8 +259,8 @@ import DomHelper from './helper/dom-helper';
      * @memberOf OIDCConnect
      */
     function doConnect(  { callback=null, config={}, inlineOnLoadCallback=null, inlineElementID=null } ) {
-        const clientConfig = _getUpdatedClientConfig( config );
-        const authorizeUrl = _createAuthorizeClientUrl( clientConfig );
+        const clientConfig = getUpdatedClientConfig( config );
+        const authorizeUrl = createAuthorizeClientUrl( clientConfig );
 
         const method = ( config && config.method ) ? config.method : CONFIG.method;
         switch ( method ) {
@@ -276,7 +289,7 @@ import DomHelper from './helper/dom-helper';
                         `top=${windowTop}`
                     ].join( ',' ) );
 
-                _doHandlePostMessage( {
+                doHandlePostMessage( {
                     element: context,
                     loginWindow: loginWindow,
                     once: true,
@@ -288,7 +301,7 @@ import DomHelper from './helper/dom-helper';
             }
             case 'redirect': {
                 window.location.assign( authorizeUrl );
-                return;
+                return null;
             }
             case 'inline': {
                 let iframeElement = document.createElement( 'iframe' );
@@ -308,7 +321,7 @@ import DomHelper from './helper/dom-helper';
                 }
                 inlineElement.appendChild( iframeElement );
 
-                _doHandlePostMessage( {
+                doHandlePostMessage( {
                     element: context,
                     loginWindow: null,
                     callback: callback,
@@ -331,7 +344,7 @@ import DomHelper from './helper/dom-helper';
      * @memberOf OIDCConnect
      */
     function doGetUserInfo( callback, accessToken = null, tokenType = null, responseType = 'code' ) {
-        console.warning( 'doGetUserInfo is an experimental feature' );
+        console.warn( `[${TAG}] doGetUserInfo is an experimental feature` );
 
         if ( !callback ) {
             throw Error( `[${TAG}] doGetUserInfo - missing callback!.` );
@@ -378,35 +391,30 @@ import DomHelper from './helper/dom-helper';
         if ( !config ) {
             throw Error( `[${TAG}] doInit - missing configuration. You need to pass a configuration object.` );
         }
-
-        CONFIG.oauth_url = config.oauth_url || CONFIG.oauth_url;
-        CONFIG.grant_type = config.grant_type || CONFIG.grant_type;
-        CONFIG.method = config.method || CONFIG.method;
-        CONFIG.token_url = config.token_url || CONFIG.token_url;
-        CONFIG.userinfo_url = config.userinfo_url || CONFIG.userinfo_url;
-
-        const allowedMethods = ['window', 'redirect', 'inline'];
-
-        if ( allowedMethods.indexOf( CONFIG.method ) === -1 ) {
-            throw Error( `[${TAG}] doInit - bad method. Use one of ${allowedMethods.toString()}.` );
+        if ( !config.oauth_url && config.oidc_url ) {
+            doGetOIDCConfig( config.oidc_url, updateConfig.bind( null, config ) );
+        } else {
+            updateConfig( config );
         }
+    }
 
+    /**
+     * Update configuration objects with given parameter object
+     * @param config
+     * @private
+     */
+    function updateConfig( config ) {
         if ( !config.hasOwnProperty( 'client_id' ) ) {
             throw Error( `[${TAG}] doInit - missing required parameter client_id.` );
         }
 
-        CLIENT_CONFIG.login_hint = config.login_hint || CLIENT_CONFIG.login_hint;
-        CLIENT_CONFIG.id_token_hint = config.id_token_hint || CLIENT_CONFIG.id_token_hint;
-        CLIENT_CONFIG.prompt = config.prompt || CLIENT_CONFIG.prompt;
-        CLIENT_CONFIG.client_id = config.client_id;
-        CLIENT_CONFIG.scope = config.scope || CLIENT_CONFIG.scope;
-        CLIENT_CONFIG.response_mode = config.response_mode || CLIENT_CONFIG.response_mode;
-        CLIENT_CONFIG.response_type = config.response_type || CLIENT_CONFIG.response_type;
-        CLIENT_CONFIG.redirect_uri = config.redirect_uri || CLIENT_CONFIG.redirect_uri;
-        CLIENT_CONFIG.state = config.state || CLIENT_CONFIG.state;
-        CLIENT_CONFIG.ui_locales = config.ui_locales || CLIENT_CONFIG.ui_locales;
-        CLIENT_CONFIG.acr_values = config.acr_values || CLIENT_CONFIG.acr_values;
-        CLIENT_CONFIG.nonce = config.nonce || CLIENT_CONFIG.nonce;
+        CONFIG.update( config );
+        CLIENT_CONFIG.update( config );
+
+        const allowedMethods = ['window', 'redirect', 'inline'];
+        if ( allowedMethods.indexOf( CONFIG.method ) === -1 ) {
+            throw Error( `[${TAG}] doInit - bad UI method. Use one of ${allowedMethods.toString()}.` );
+        }
     }
 
     /**
