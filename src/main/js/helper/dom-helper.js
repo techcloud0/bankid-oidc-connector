@@ -47,7 +47,12 @@ export default class DomHelper {
     static doPost( url, data, callback, headers = {} ) {
         const dataForm = DomHelper.serializeConfigToURL( data );
 
-        const xhr = new ( window.XMLHttpRequest || window.ActiveXObject )( 'MSXML2.XMLHTTP.3.0' );
+        let xhr;
+        if ( window.XDomainRequest ) xhr = new window.XDomainRequest();
+        else if ( window.XMLHttpRequest ) xhr = new window.XMLHttpRequest();
+        else xhr = new window.ActiveXObject( 'MSXML2.XMLHTTP.3.0' );
+
+        xhr.open( 'POST', url );
         xhr.withCredentials = true;
         xhr.addEventListener( 'load', () => {
             if ( xhr.readyState === xhr.DONE && xhr.status === 200 ) {
@@ -68,7 +73,6 @@ export default class DomHelper {
         xhr.addEventListener( 'timeout', () => callback( { timeout: true } ) );
         xhr.addEventListener( 'abort', () => callback( { abort: true } ) );
 
-        xhr.open( 'POST', url );
         for ( const header in headers ) {
             if ( headers.hasOwnProperty( header ) ) {
                 xhr.setRequestHeader( header, headers[header] );
@@ -76,5 +80,36 @@ export default class DomHelper {
         }
         xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
         xhr.send( dataForm );
+    }
+
+    static doGet( url, callback ) {
+        let xhr;
+
+        if ( window.XDomainRequest ) xhr = new window.XDomainRequest();
+        else if ( window.XMLHttpRequest ) xhr = new window.XMLHttpRequest();
+        else xhr = new window.ActiveXObject( 'MSXML2.XMLHTTP.3.0' );
+
+        xhr.open( 'GET', url, true );
+        xhr.setRequestHeader( 'Accept', 'application/json' );
+        xhr.addEventListener( 'load', () => {
+            if ( xhr.readyState === xhr.DONE && xhr.status === 200 ) {
+                try {
+                    callback( null, JSON.parse( xhr.responseText ) || {} );
+                }
+                catch ( e ) {
+                    console.trace( e );
+                    callback( { error: 'Invalid JSON in response' } );
+                }
+            }
+            else {
+                callback( { error: 'Unexpected error', status: xhr.status, message: xhr.responseText } );
+            }
+        } );
+
+        xhr.addEventListener( 'error', ( e ) => callback( e ) );
+        xhr.addEventListener( 'timeout', () => callback( { timeout: true } ) );
+        xhr.addEventListener( 'abort', () => callback( { abort: true } ) );
+
+        xhr.send();
     }
 }
