@@ -15,6 +15,8 @@ const PACKAGE_JSON = require( path.resolve( ROOT, 'package.json' ) );
 
 const serverCommon = require( '../server/server.common' );
 
+const self = this;
+
 
 module.exports.getDevConfig = function() {
     const devConfig = Object.create( WEBPACK_CONFIG );
@@ -73,6 +75,6 @@ module.exports.runWebPack = function( compiler, callback ) {
 };
 
 module.exports.buildJS = function( environment, callback ) {
-    const compiler = webpack( this.getDistConfig( environment ) );
-    this.runWebPack( compiler, callback );
+    const compiler = webpack( self.getDistConfig( environment ) );
+    self.runWebPack( compiler, callback );
 };
