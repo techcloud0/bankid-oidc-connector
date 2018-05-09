@@ -73,6 +73,7 @@ import CLIENT_CONFIG from './config/oidc.config';
 import CONFIG from './config/connector.config';
 
 import DomHelper from './helper/dom-helper';
+import { doGetOIDCConfig } from './actions/oidc.actions';
 
 ( function ( context ) {
     const TAG = 'OIDC-Connector';
@@ -88,31 +89,6 @@ import DomHelper from './helper/dom-helper';
      */
     function getUpdatedClientConfig( override_config = {} ) {
         return Object.assign( CLIENT_CONFIG, override_config );
-    }
-
-    /**
-     * Makes a GET request to the provided OpenID Configuration. Calls callback function when completed.
-     *
-     * @param url
-     * @param callback
-     * @private
-     */
-    function doGetOIDCConfig( url, callback ) {
-        if ( url ) {
-            DomHelper.doGet( url, ( err, data ) => {
-                if ( err ) {
-                    console.error( err );
-                }
-
-                if ( data && data.authorization_endpoint ) {
-                    CONFIG.oauth_url = data.authorization_endpoint;
-                }
-
-                callback();
-            } );
-        } else {
-            callback();
-        }
     }
 
     /**
