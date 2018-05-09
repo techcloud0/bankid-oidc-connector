@@ -27,8 +27,7 @@ module.exports.getDevConfig = function() {
     return devConfig;
 };
 
-
-function getDistConfig( environment ) {
+module.exports.getDistConfig = function( environment ) {
     const distConfig = Object.create( WEBPACK_CONFIG );
 
     distConfig.output.filename = '[name].bundle.min.js';
@@ -56,9 +55,9 @@ function getDistConfig( environment ) {
         } )
     );
     return distConfig;
-}
+};
 
-function runWebPack( compiler, callback ) {
+module.exports.runWebPack = function( compiler, callback ) {
     compiler.run( ( err, stats ) => {
         if ( err ) {
             gutil.log( `[${TAG}~error]`, new gutil.PluginError( `[${TAG}]`, err ) );
@@ -71,9 +70,9 @@ function runWebPack( compiler, callback ) {
             callback();
         }
     } );
-}
+};
 
 module.exports.buildJS = function( environment, callback ) {
-    const compiler = webpack( getDistConfig( environment ) );
-    runWebPack( compiler, callback );
+    const compiler = webpack( this.getDistConfig( environment ) );
+    this.runWebPack( compiler, callback );
 };
