@@ -68,6 +68,7 @@
 
 import EVENT_CONSTANTS from './constants/event.constants';
 import XDM_CONSTANTS from './constants/xdm.constants';
+import CONNECTOR_CONSTANTS from './constants/connector.constants';
 
 import CLIENT_CONFIG from './config/oidc.config';
 import CONFIG from './config/connector.config';
@@ -251,7 +252,7 @@ import { doGetOIDCConfig } from './actions/oidc.actions';
                     loginWindow.close();
                 }
 
-                loginWindow = window.open( authorizeUrl, 'login',
+                loginWindow = window.open( authorizeUrl, CONNECTOR_CONSTANTS.WINDOW_NAME,
                     [
                         'toolbar=no',
                         'location=no',
