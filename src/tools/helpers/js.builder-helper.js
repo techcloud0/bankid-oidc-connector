@@ -31,13 +31,14 @@ module.exports.getDevConfig = function() {
 
 module.exports.getDistConfig = function( environment ) {
     const distConfig = Object.create( WEBPACK_CONFIG );
+    const env = process.env.NODE_ENV || 'dev';
 
     distConfig.output.filename = '[name].bundle.min.js';
     distConfig.output.path = DIST_OUTPUT_FOLDER;
 
     let uglifyConfig = {
         compress: {
-            drop_console: true
+            drop_console: env !== 'dev'
         }
     };
 
