@@ -3,6 +3,22 @@ import CONNECTOR_CONSTANTS from '../constants/connector.constants';
 export default class DomHelper {
 
     /**
+     * @return {Number} IE version, 0 if not IE browser
+     */
+    static getIEVersion() {
+        const ua = window.navigator.userAgent;
+        const msie = ua.indexOf( 'MSIE ' );
+
+        if ( msie > 0 || !!window.navigator.userAgent.match( /Trident.*rv:11\./ ) ) {
+            return parseInt( ua.substring( msie + 5, ua.indexOf( '.', msie ) ) );
+        }
+        else {
+            return 0;
+        }
+    }
+
+
+    /**
      * Returns a random hex as string.
      * @return {string}
      */
@@ -47,69 +63,119 @@ export default class DomHelper {
     static doPost( url, data, callback, headers = {} ) {
         const dataForm = DomHelper.serializeConfigToURL( data );
 
-        let xhr;
-        if ( window.XDomainRequest ) xhr = new window.XDomainRequest();
-        else if ( window.XMLHttpRequest ) xhr = new window.XMLHttpRequest();
-        else xhr = new window.ActiveXObject( 'MSXML2.XMLHTTP.3.0' );
+        if ( window.XDomainRequest && DomHelper.getIEVersion() === 9 ) {
+            const xdr = new window.XDomainRequest();
+            xdr.open( 'POST', url );
 
-        xhr.open( 'POST', url );
-        xhr.withCredentials = true;
-        xhr.addEventListener( 'load', () => {
-            if ( xhr.readyState === xhr.DONE && xhr.status === 200 ) {
+            xdr.ontimeout = function () {
+                callback( { timeout: true } );
+            };
+
+            xdr.onerror = function () {
+                callback( { error: `Unexpected error connecting to ${url}` } );
+            };
+
+            xdr.onload = function() {
                 try {
-                    callback( null, JSON.parse( xhr.responseText ) || {} );
+                    callback( null, JSON.parse( xdr.responseText ) || {} );
                 }
                 catch ( e ) {
                     console.trace( e );
                     callback( { error: 'Invalid JSON in response' } );
                 }
-            }
-            else {
-                callback( { error: 'Unexpected error', status: xhr.status, message: xhr.responseText } );
-            }
-        } );
+            };
 
-        xhr.addEventListener( 'error', ( e ) => callback( e ) );
-        xhr.addEventListener( 'timeout', () => callback( { timeout: true } ) );
-        xhr.addEventListener( 'abort', () => callback( { abort: true } ) );
+            // To prevent an issue with the interface where some requests are lost if multiple XDomainRequests are being sent at the same time
+            setTimeout( () => {
+                xdr.send( dataForm );
+            }, 0 );
+        } else {
+            const xhr = new ( window.XMLHttpRequest || window.ActiveXObject )( 'MSXML2.XMLHTTP.3.0' );
+            xhr.open( 'POST', url );
+            xhr.withCredentials = true;
+            xhr.addEventListener( 'load', () => {
+                if ( xhr.readyState === xhr.DONE && xhr.status === 200 ) {
+                    try {
+                        callback( null, JSON.parse( xhr.responseText ) || {} );
+                    }
+                    catch ( e ) {
+                        console.trace( e );
+                        callback( { error: 'Invalid JSON in response' } );
+                    }
+                }
+                else {
+                    callback( { error: 'Unexpected error', status: xhr.status, message: xhr.responseText } );
+                }
+            } );
 
-        for ( const header in headers ) {
-            if ( headers.hasOwnProperty( header ) ) {
-                xhr.setRequestHeader( header, headers[header] );
+            xhr.addEventListener( 'error', ( e ) => callback( e ) );
+            xhr.addEventListener( 'timeout', () => callback( { timeout: true } ) );
+            xhr.addEventListener( 'abort', () => callback( { abort: true } ) );
+
+            for ( const header in headers ) {
+                if ( headers.hasOwnProperty( header ) ) {
+                    xhr.setRequestHeader( header, headers[header] );
+                }
             }
+            xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+            console.log( 'Going to send: ' + dataForm );
+            xhr.send( dataForm );
         }
-        xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
-        xhr.send( dataForm );
+
+
     }
 
     static doGet( url, callback ) {
-        let xhr;
+        if ( window.XDomainRequest && DomHelper.getIEVersion() === 9 ) {
+            const xdr = new window.XDomainRequest();
+            xdr.open( 'GET', url );
 
-        if ( window.XDomainRequest ) xhr = new window.XDomainRequest();
-        else if ( window.XMLHttpRequest ) xhr = new window.XMLHttpRequest();
-        else xhr = new window.ActiveXObject( 'MSXML2.XMLHTTP.3.0' );
+            xdr.ontimeout = function () {
+                callback( { timeout: true } );
+            };
 
-        xhr.open( 'GET', url, true );
-        xhr.setRequestHeader( 'Accept', 'application/json' );
-        xhr.addEventListener( 'load', () => {
-            if ( xhr.readyState === xhr.DONE && xhr.status === 200 ) {
+            xdr.onerror = function () {
+                callback( { error: `Unexpected error connecting to ${url}` } );
+            };
+
+            xdr.onload = function() {
                 try {
-                    callback( null, JSON.parse( xhr.responseText ) || {} );
+                    callback( null, JSON.parse( xdr.responseText ) || {} );
                 }
                 catch ( e ) {
                     console.trace( e );
                     callback( { error: 'Invalid JSON in response' } );
                 }
-            }
-            else {
-                callback( { error: 'Unexpected error', status: xhr.status, message: xhr.responseText } );
-            }
-        } );
+            };
 
-        xhr.addEventListener( 'error', ( e ) => callback( e ) );
-        xhr.addEventListener( 'timeout', () => callback( { timeout: true } ) );
-        xhr.addEventListener( 'abort', () => callback( { abort: true } ) );
+            // To prevent an issue with the interface where some requests are lost if multiple XDomainRequests are being sent at the same time
+            setTimeout( () => {
+                xdr.send();
+            }, 0 );
+        } else {
+            const xhr = new ( window.XMLHttpRequest || window.ActiveXObject )( 'MSXML2.XMLHTTP.3.0' );
+            xhr.open( 'GET', url, true );
+            xhr.setRequestHeader( 'Accept', 'application/json' );
+            xhr.addEventListener( 'load', () => {
+                if ( xhr.readyState === xhr.DONE && xhr.status === 200 ) {
+                    try {
+                        callback( null, JSON.parse( xhr.responseText ) || {} );
+                    }
+                    catch ( e ) {
+                        console.trace( e );
+                        callback( { error: 'Invalid JSON in response' } );
+                    }
+                }
+                else {
+                    callback( { error: `Unexpected error connecting to ${url}`, status: xhr.status, message: xhr.responseText } );
+                }
+            } );
 
-        xhr.send();
+            xhr.addEventListener( 'error', ( e ) => callback( e ) );
+            xhr.addEventListener( 'timeout', () => callback( { timeout: true } ) );
+            xhr.addEventListener( 'abort', () => callback( { abort: true } ) );
+
+            xhr.send();
+        }
     }
 }
