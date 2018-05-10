@@ -1,5 +1,16 @@
 # Changelog - BankID OIDC Connector
 
+## [1.4.0] - 10.05.2018
+
+### Added
+- New parameter to doInit called oidc_url that is used to fetch the authorization endpoint (oauth_url) from an OpenID configuration.
+- Usage of session storage to temporarily store retrieved authorization endpoint from OpenID configuration.
+- Default URL to OpenID configuration is now built into the connector when served from BankID CDN.
+
+### Updated
+- The library now makes an automated GET request on load to retrieve authorization endpoint from an OpenID configuration (if oidc_url is given or built in).
+- The login window name is now named 'BankIDOIDCConnectorLoginWindow'.
+
 ## [1.3.0] - 20.02.2018
 
 ### Added

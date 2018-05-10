@@ -1,6 +1,6 @@
 # BankID OIDC Connector
 
-The BankID OIDC Connector provides a Javascript API to easily integrate with the BankID OpenID Connect Platform.
+The BankID OIDC Connector provides a Javascript API to easily integrate with the BankID OpenID Connect platform.
 
 ## Documentation
 
@@ -39,8 +39,8 @@ A simple example on how to connect to an OIDC provider like BankID:
 </html>
 ```
 
-* **NOTE: You need to replace `client_id` and `redirect_uri` with your own values.**
-* By default, the OIDC connector will use redirect mode. Change `method` parameter to `window`, or `inline` for other modes.
+* **NOTE: You need to replace `client_id` and `redirect_uri` with your own values as given by the OpenID Connect provider.**
+* By default, the OIDC connector will use redirect UI mode when triggered. Change `method` parameter to `window`, or `inline` for other modes.
 * You can override the authorization_endpoint that is opened by providing `oauth_url` to `OIDC.doInit( { oauth_url: '', ... } )` configuration object.
 
 ### Login hint
