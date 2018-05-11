@@ -111,21 +111,17 @@ import { doGetOIDCConfig } from './actions/oidc.actions';
      * OIDC Connector onLoad handler.
      */
     function onLoad() {
-        try {
-            doPolyfill( doGetOIDCConfig.bind( null, CONFIG.oidc_url, doSendLoadedEvent ) );
-        } catch ( e ) {
-            doSendLoadedEvent();
-        }
+        doPolyfill();
+        doSendLoadedEvent();
     }
 
     /**
      * Apply polyfills for cross-browser functionality.
      * @private
      */
-    function doPolyfill( callback ) {
+    function doPolyfill() {
         // custom event polyfill
         if ( typeof window.CustomEvent === 'function' ) {
-            callback();
             return;
         }
 
@@ -138,7 +134,6 @@ import { doGetOIDCConfig } from './actions/oidc.actions';
 
         CustomEvent.prototype = window.Event.prototype;
         window.CustomEvent = CustomEvent;
-        callback();
     }
 
     /**
@@ -368,8 +363,8 @@ import { doGetOIDCConfig } from './actions/oidc.actions';
         if ( !config ) {
             throw Error( `[${TAG}] doInit - missing configuration. You need to pass a configuration object.` );
         }
-        if ( !config.oauth_url && config.oidc_url ) {
-            doGetOIDCConfig( config.oidc_url, updateConfig.bind( null, config ) );
+        if ( !config.oauth_url && ( config.oidc_url || CONFIG.oidc_url ) ) {
+            doGetOIDCConfig( config.oidc_url || CONFIG.oidc_url, updateConfig.bind( null, config ) );
         } else {
             updateConfig( config );
         }
