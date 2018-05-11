@@ -1,7 +1,7 @@
-BankID OIDC Connector v1.4.0
+BankID OIDC Connector v1.4.1
 ============================
 
-BankID OIDC Connector v1.4.0 was released on May 10, 2018.
+BankID OIDC Connector v1.4.1 was released on May 11, 2018.
 
 About
 -----
@@ -11,11 +11,8 @@ BankID OIDC connector is a library for easy integration with BankID's OpenID Con
 What's new
 ----------
 
-- New parameter to doInit called oidc_url that is used to fetch the authorization endpoint (oauth_url) from an OpenID configuration.
-- Usage of session storage to temporarily store retrieved authorization endpoint from OpenID configuration.
-- The library now makes an automated GET request on load to retrieve authorization endpoint from an OpenID configuration (if oidc_url is given or built in).
-- Default URL to OpenID configuration is now built into the connector when served from BankID CDN.
-- The login window name is now named 'BankIDOIDCConnectorLoginWindow'.
+- Fetch new OIDC configuration if URL to configuration changes avoiding an issue where a built-in OIDC URL would not allow merchants to override it.
+- Load the OIDC configuration on doInit to let merchants control when the GET request happens.
 
 Installation
 ------------

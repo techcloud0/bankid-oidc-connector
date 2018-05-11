@@ -1,5 +1,12 @@
 # Changelog - BankID OIDC Connector
 
+## [1.4.1] - 11.05.2018
+
+### Updated
+- Fetch new OIDC configuration if URL to configuration changes avoiding an issue where a built-in OIDC URL would not allow merchants to override it.
+- Load the OIDC configuration on doInit to let merchants control when the GET request happens.
+
+
 ## [1.4.0] - 10.05.2018
 
 ### Added
