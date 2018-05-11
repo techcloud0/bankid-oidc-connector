@@ -11,19 +11,21 @@ import STORAGE_CONSTANTS from '../constants/storage.constants';
  * @param callback
  * @private
  */
-export function doGetOIDCConfig( url, callback ) {
-    if ( url ) {
-        if ( readSessionStorage( STORAGE_CONSTANTS.OIDC_CONFIG_AUTHORIZATION_ENDPOINT ) !== null ) {
+export function doGetOIDCConfig( oidcUrl, callback ) {
+    if ( oidcUrl ) {
+        const oidcUrlSessionStorage = readSessionStorage( STORAGE_CONSTANTS.OIDC_CONFIG_OIDC_CONFIGURATION_ENDPOINT );
+        if ( oidcUrlSessionStorage !== null && oidcUrlSessionStorage === oidcUrl ) {
             CONFIG.oauth_url = readSessionStorage( STORAGE_CONSTANTS.OIDC_CONFIG_AUTHORIZATION_ENDPOINT );
             callback();
         } else {
-            DomHelper.doGet( url, ( err, data ) => {
+            DomHelper.doGet( oidcUrl, ( err, data ) => {
                 if ( err ) {
                     console.error( err );
                 }
 
                 if ( data && data.authorization_endpoint ) {
                     CONFIG.oauth_url = data.authorization_endpoint;
+                    writeSessionStorage( STORAGE_CONSTANTS.OIDC_CONFIG_OIDC_CONFIGURATION_ENDPOINT, oidcUrl );
                     writeSessionStorage( STORAGE_CONSTANTS.OIDC_CONFIG_AUTHORIZATION_ENDPOINT, data.authorization_endpoint );
                 }
 
