@@ -19,6 +19,7 @@
  * @property {String} token_url
  * @property {String} id_token_hint
  * @property {String} prompt
+ * @property {String} sign_id
  * @memberOf OIDCConnect
  */
 
@@ -43,6 +44,7 @@
  * @property {String} nonce
  * @property {String} id_token_hint
  * @property {String} prompt
+ * @property {String} sign_id
  * @memberOf OIDCConnect
  */
 

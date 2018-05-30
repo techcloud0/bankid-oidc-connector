@@ -5,7 +5,7 @@ import DomHelper from '../helper/dom-helper';
  */
 class OIDCConfig {
 
-    constructor( { redirect_uri, login_hint, response_mode, response_type, ui_locales, acr_values, nonce, state, id_token_hint, prompt, scope } ) {
+    constructor( { redirect_uri, login_hint, response_mode, response_type, ui_locales, acr_values, nonce, state, id_token_hint, prompt, scope, sign_id } ) {
         this.redirect_uri = redirect_uri;
         this.login_hint = login_hint;
         this.response_mode = response_mode;
@@ -17,9 +17,10 @@ class OIDCConfig {
         this.id_token_hint = id_token_hint;
         this.prompt = prompt;
         this.scope = scope;
+        this.sign_id = sign_id;
     }
 
-    update( { login_hint, id_token_hint, prompt, client_id, scope, response_mode, response_type, redirect_uri, state, ui_locales, acr_values, nonce } ) {
+    update( { login_hint, id_token_hint, prompt, client_id, scope, response_mode, response_type, redirect_uri, state, ui_locales, acr_values, nonce, sign_id } ) {
         this.login_hint = login_hint || this.login_hint;
         this.id_token_hint = id_token_hint || this.id_token_hint;
         this.prompt = prompt || this.prompt;
@@ -32,6 +33,7 @@ class OIDCConfig {
         this.ui_locales = ui_locales || this.ui_locales;
         this.acr_values = acr_values || this.acr_values;
         this.nonce = nonce || this.nonce;
+        this.sign_id = sign_id || this.sign_id;
     }
 
 }
@@ -47,5 +49,6 @@ export default new OIDCConfig( {
     state: 'untouched',
     login_hint: '',
     id_token_hint: '',
-    prompt: ''
+    prompt: '',
+    sign_id: ''
 } );

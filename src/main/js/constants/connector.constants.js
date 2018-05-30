@@ -15,7 +15,8 @@ export default {
         'grant_type',
         'code',
         'application_name',
-        'merchant_name'
+        'merchant_name',
+        'sign_id'
     ],
     WINDOW_NAME: 'BankIDOIDCConnectorLoginWindow'
 };
