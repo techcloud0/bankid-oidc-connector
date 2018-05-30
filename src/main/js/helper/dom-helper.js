@@ -35,7 +35,7 @@ export default class DomHelper {
      */
     static serializeConfigToURL( config ) {
         return Object.keys( config )
-            .filter( key => { return CONNECTOR_CONSTANTS.ALLOWED_PARAMS.indexOf( key ) > -1; } )
+            .filter( key => { return config[key] && CONNECTOR_CONSTANTS.ALLOWED_PARAMS.indexOf( key ) > -1; } )
             .map( key => `${key}=${encodeURIComponent( config[key] )}` ).join( '&' );
     }
 
