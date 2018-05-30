@@ -20,6 +20,7 @@
  * @property {String} id_token_hint
  * @property {String} prompt
  * @property {String} sign_id
+ * @property {String} application_name
  * @memberOf OIDCConnect
  */
 
@@ -45,6 +46,7 @@
  * @property {String} id_token_hint
  * @property {String} prompt
  * @property {String} sign_id
+ * @property {String} application_name
  * @memberOf OIDCConnect
  */
 
