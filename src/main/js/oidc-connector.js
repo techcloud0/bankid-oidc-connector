@@ -27,8 +27,6 @@
 /**
  * @typedef {Object} OIDCConnect.InitConfiguration
  * @property {String} grant_type
- * @property {String} token_url
- * @property {String} userinfo_url
  * @property {String} oidc_url
  * @property {String} oauth_url
  * @property {String} method
@@ -49,17 +47,6 @@
  * @property {String} application_name
  * @memberOf OIDCConnect
  */
-
-/**
- * @typedef {Object} OIDCConnect.TokenResult
- * @property {String} access_token
- * @property {String} token_type
- * @property {Number} expires_in
- * @property {String} scope
- * @property {String} id_token
- * @memberOf OIDCConnect
- */
-
 
 /**
  * @typedef {Object} OIDCConnect.doConnectParameters
@@ -179,16 +166,11 @@ import { doGetOIDCConfig } from './actions/oidc.actions';
                         // Reset inline element
                         inlineElement.innerHTML = '';
                     }
-
-                    if ( data.error ) {
-                        if ( callback ) {
+                    if ( callback ) {
+                        if ( data.error ) {
                             callback( { error: data.error } );
                         }
-                    }
-                    else {
-                        if ( CONFIG.token_url && CLIENT_CONFIG.response_type === 'code' && data.data.code !== undefined ) {
-                            doAuthenticateCode( data.data.code, callback );
-                        } else if ( callback ) {
+                        else {
                             callback( null, data.data );
                         }
                     }
@@ -200,32 +182,6 @@ import { doGetOIDCConfig } from './actions/oidc.actions';
             }
         }
         element.addEventListener( 'message', actionCallback );
-    }
-
-    /**
-     * Perform request to token_url with code/grant_type/client_id/redirect_uri meant for auth code token exchange.
-     * @param code
-     * @param callback
-     * @private
-     */
-    function doAuthenticateCode( code, callback ) {
-        DomHelper.doPost( CONFIG.token_url, {
-            'client_id': CLIENT_CONFIG.client_id,
-            'grant_type': CONFIG.grant_type,
-            'code': code,
-            'redirect_uri': CLIENT_CONFIG.redirect_uri
-        }, ( err, result ) => {
-            if ( callback ) {
-                if ( err ) {
-                    callback( err );
-                }
-                else if ( result['error'] ) {
-                    callback( { error: result['error'] } );
-                } else {
-                    callback( null, result );
-                }
-            }
-        } );
     }
 
     /**
@@ -312,52 +268,6 @@ import { doGetOIDCConfig } from './actions/oidc.actions';
     }
 
     /**
-     * @callback OIDCConnect.GetUserInfoCallback
-     * @param callback
-     * @param accessToken
-     * @param tokenType
-     * @param responseType
-     * @memberOf OIDCConnect
-     */
-    function doGetUserInfo( callback, accessToken = null, tokenType = null, responseType = 'code' ) {
-        console.warn( `[${TAG}] doGetUserInfo is an experimental feature` );
-
-        if ( !callback ) {
-            throw Error( `[${TAG}] doGetUserInfo - missing callback!.` );
-        }
-        if ( !accessToken ) {
-            throw Error( `[${TAG}] doGetUserInfo - missing accessToken!.` );
-        }
-        if ( !tokenType ) {
-            throw Error( `[${TAG}] doGetUserInfo - missing tokenType!.` );
-        }
-
-        let headers = {};
-        let data = {};
-
-        if ( responseType === 'code' ) {
-            data.access_token = accessToken;
-            data.token_type = tokenType;
-        } else if ( responseType === 'token' ) {
-            headers.Authorization = `${tokenType} ${accessToken}`;
-        }
-
-        DomHelper.doPost( CONFIG.userinfo_url, data, ( err, result ) => {
-            if ( err ) {
-                callback( err );
-            }
-            else {
-                if ( result['error'] ) {
-                    callback( { error: result['error'] } );
-                }
-                else {
-                    callback( null, result );
-                }
-            }
-        }, headers );
-    }
-
-    /**
      * Set parameters used in doConnect calls.
      * @param {OIDCConnect.InitConfiguration} config
      * @return void
@@ -414,15 +324,6 @@ import { doGetOIDCConfig } from './actions/oidc.actions';
          */
         doConnect: doConnect,
 
-        /**
-         * Fetch userinfo from userinfo endpoint (Experimental feature).
-         * @callback OIDCConnect.GetUserInfoCallback
-         * @param {Function|OIDCConnect.GetUserInfoCallback} callback
-         * @param {String} accessToken
-         * @param {String} tokenType
-         * @param {String} responseType
-         */
-        doGetUserInfo: doGetUserInfo,
         // eslint-disable-next-line no-undef
         VERSION: VERSION
     };
