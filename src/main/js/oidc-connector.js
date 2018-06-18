@@ -15,8 +15,6 @@
  * @property {String} acr_values
  * @property {String} state
  * @property {String} nonce
- * @property {String} userinfo_url
- * @property {String} token_url
  * @property {String} id_token_hint
  * @property {String} prompt
  * @property {String} sign_id

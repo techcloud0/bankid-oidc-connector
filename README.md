@@ -99,28 +99,6 @@ The BankID OIDC service only accepts `redirect_uri` on HTTPS which is why the no
 
 In order to enrich the server with certificate info or to disable HTTPS, you need to edit the `connect.server({...})` call in `tools/gulp/server.connector.gulp.js`
 
-## Additional features
-
-### Local proxy for Token/Userinfo exchange
- 
-The local development node server can act as a proxy to the Token and Userinfo endpoints when using the experimental
-features in the OIDC Connector as [explained here](https://confluence.bankidnorge.no/confluence/pdoidcl/technical-documentation/js-connector/back-end-implementation).
-
-The provided node server has implemented the necessary backend features to make the Token and Userinfo calls on behalf of the OIDC connector
-running on the client-side.
-
-In order to use this feature with the development server, you need to do the following:
-
-1. Create a new file in the root of the repository named `config.custom.json` .
-2. Add configuration for:
-    * `client_secret`: the client_secret for your client_id on the OIDC Service
-    * `tokenUrl`: URL to the Token Endpoint on the OIDC Service.
-    * `userInfoUrl`: URL to the Userinfo Endpoint on the OIDC Service.
-3. On your client-side OIDC Connector `OIDC.doInit({ .. })` call:
-    * add `token_url` pointing to your development server. E.g. http://localhost:3000/oauth/token
-    * add `userinfo_url` pointing to your development server. E.g. http://localhost:3000/oauth/userinfo.    
-4. Restart your development server
-
 ## Additional reading
 
 See [Release Notes](RELEASE-NOTES.md) for latest version and [Change Log](CHANGELOG.md) for release notes on all releases.
