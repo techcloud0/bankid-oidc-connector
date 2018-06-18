@@ -16,15 +16,13 @@
             <h4>Simple example</h4>
             <pre><code>
     function onLogin() {
-        // Default method mode is redirect, so callback handler is not applicable.
-        window.OIDC.doConnect( {
-            callback: function() {}
-        });
+        // Default method mode is redirect, no callback is needed, using default config so passing empty object.
+        OIDC.doConnect({});
     }
 
     function onOIDCLoaded() {
         // Initialise OIDC with required parameters, method is redirect by default
-        window.OIDC.doInit({
+        OIDC.doInit({
             // URL to OIDC service
             oidc_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/.well-known/openid-configuration',
             // Merchant given client ID on the OIDC service
@@ -49,14 +47,12 @@
 <script type="text/javascript">
     function onLogin() {
         // Default method mode is redirect, so callback handler is not applicable.
-        window.OIDC.doConnect( {
-            callback: function() {}
-        });
+        OIDC.doConnect({});
     }
 
     function onOIDCLoaded() {
         // Initialise OIDC with required parameters, method is redirect by default
-        window.OIDC.doInit({
+        OIDC.doInit({
             // URL to OIDC service
             oidc_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/.well-known/openid-configuration',
             // Merchant given client ID on the OIDC service

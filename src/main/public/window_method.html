@@ -17,7 +17,7 @@
             <pre><code>
     // Handle button click and start login
     function onOIDCButtonClick() {
-        window.OIDC.doConnect({
+        OIDC.doConnect({
             callback: function( err, data ) {
                 if ( err ) {
                     return;
@@ -29,7 +29,7 @@
 
     function onOIDCLoaded() {
         // Initialise OIDC with required parameters
-        window.OIDC.doInit({
+        OIDC.doInit({
             // URL to OIDC service
             oidc_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/.well-known/openid-configuration',
             // Merchant given client ID on the OIDC service
@@ -57,7 +57,7 @@
 <script type="text/javascript">
     // Handle button click and start login
     function onOIDCButtonClick() {
-        var loginWindow = window.OIDC.doConnect({
+        var loginWindow = OIDC.doConnect({
             // Add override config to doConnect call
             config: {
                 // Adds login_hint to Authorization call pre-selecting BID login method
@@ -75,7 +75,7 @@
 
     function onOIDCLoaded() {
         // Initialise OIDC with required parameters
-        window.OIDC.doInit({
+        OIDC.doInit({
             // URL to OIDC service
             oidc_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/.well-known/openid-configuration',
             // Merchant given client ID on the OIDC service
