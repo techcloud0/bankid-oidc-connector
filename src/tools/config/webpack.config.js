@@ -14,13 +14,13 @@ module.exports = {
         filename: '[name].bundle.js',
     },
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.js$/,
                 exclude: /(bower_components|\.polyfill)/,
                 loader: 'babel-loader',
                 query: {
-                    presets: ['es2015'],
+                    presets: ['@babel/preset-env'],
                     plugins: ['transform-object-assign']
                 }
             }
@@ -36,5 +36,6 @@ module.exports = {
     context: __dirname,
     node: {
         __filename: true
-    }
+    },
+    mode: 'development'
 };

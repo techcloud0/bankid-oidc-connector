@@ -11,17 +11,17 @@ const maven = require( 'maven-deploy' );
  * <br>
  * Uses this plugin: https://github.com/finn-no/maven-deploy
  */
-gulp.task( 'connector:dist:deploy', ['connector:dist:package:release'], () => {
+gulp.task( 'connector:dist:deploy', gulp.series( 'connector:dist:package:release', () => {
     const maven_config = require( path.resolve( ROOT, './maven-config.json' ) );
     maven.config( maven_config );
     maven.deploy( 'bankid-public-snapshot', true );
-} );
+} ) );
 
 /**
  * Deploy a release version of bankid-oidc-connector with the version given in package.json
  */
-gulp.task( 'connector:dist:release', ['connector:dist:package:release'], () => {
+gulp.task( 'connector:dist:release', gulp.series( 'connector:dist:package:release', () => {
     const maven_config = require( path.resolve( ROOT, './maven-config.json' ) );
     maven.config( maven_config );
     maven.deploy( 'bankid-public' );
-} );
+} ) );

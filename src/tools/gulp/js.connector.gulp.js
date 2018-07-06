@@ -19,22 +19,22 @@ gulp.task( 'connector:js', callback => {
     jsBuilderHelper.runWebPack( compiler, callback );
 } );
 
-gulp.task( 'connector:js:watch', () => {
+gulp.task( 'connector:js:watch', callback => {
     const compiler = webpack( jsBuilderHelper.getDevConfig() );
     compiler.watch( {
         aggregateTimeout: 300
     }, ( err, stats ) => {
         if ( err ) {
             gutil.log( `[${TAG}~error]`, new gutil.PluginError( `[${TAG}]`, err ) );
+            callback();
             return;
         }
 
         gutil.log( `[${TAG}~webpack]`, stats.toString( 'minimal' ) );
+        callback();
     } );
 } );
 
-gulp.task( 'connector:js:dist', jsBuilderHelper.buildJS );
-
-gulp.task( 'connector:js:dist:release', jsBuilderHelper.buildJS.bind( null, 'SYSTEMTEST' ) );
-
+gulp.task( 'connector:js:dist', ( callback ) => { jsBuilderHelper.buildJS( null, callback ); } );
+gulp.task( 'connector:js:dist:release', ( callback ) => { jsBuilderHelper.buildJS( 'SYSTEMTEST', callback ); } );
 gulp.task( 'connector:clean:dist', () => del( path.resolve( DIST_FOLDER, '**' ), { force: true } ) );

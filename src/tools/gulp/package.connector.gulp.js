@@ -3,7 +3,6 @@ const del = require( 'del' );
 const path = require( 'path' );
 const gulp = require( 'gulp' );
 
-const runSequence = require( 'run-sequence' );
 const maven = require( 'maven-deploy' );
 const serverCommon = require( '../server/server.common' );
 const jsBuilderHelper = require( '../helpers/js.builder-helper' );
@@ -13,14 +12,8 @@ const CONFIG = serverCommon.getConfigJson();
 const ROOT = path.resolve( __dirname, '../../../' );
 const MAVEN_CONFIG = path.resolve( ROOT, './maven-config.json' );
 
-
-gulp.task( 'connector:dist:package', ( cb ) => {
-    runSequence( 'connector:clean:dist', ['connector:js:dist', 'connector:docs:dist'], cb );
-} );
-
-gulp.task( 'connector:dist:package:release', ( cb ) => {
-    runSequence( 'connector:clean:dist', ['connector:js:dist:release', 'connector:docs:dist'], cb );
-} );
+gulp.task( 'connector:dist:package', gulp.series( 'connector:clean:dist', gulp.parallel( 'connector:js:dist', 'connector:docs:dist' ) ) );
+gulp.task( 'connector:dist:package:release', gulp.series( 'connector:clean:dist', gulp.parallel( 'connector:js:dist:release', 'connector:docs:dist' ) ) );
 
 if ( CONFIG && CONFIG.environments && fs.existsSync( MAVEN_CONFIG ) ) {
     Object.keys( CONFIG.environments ).forEach( ( environment ) => {
@@ -40,9 +33,9 @@ if ( CONFIG && CONFIG.environments && fs.existsSync( MAVEN_CONFIG ) ) {
         } );
     } );
 
-    gulp.task( 'connector:dist:package:all', ['connector:clean:dist'], ( cb ) => {
-        runSequence( 'connector:docs:dist', ...Object.keys( CONFIG.environments ).map( ( environment ) => {
+    gulp.task( 'connector:dist:package:all',
+        gulp.series( 'connector:clean:dist', 'connector:docs:dist', ...Object.keys( CONFIG.environments ).map( ( environment ) => {
             return `connector:dist:package:${environment}`;
-        } ), cb );
-    } );
+        } ) )
+    );
 }

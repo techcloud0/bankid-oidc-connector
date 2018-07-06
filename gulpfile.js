@@ -2,21 +2,20 @@ const gulp = require( 'gulp' );
 
 const path = require( 'upath' );
 const requireDir = require( 'require-dir-all' );
-const runSequence = require( 'run-sequence' );
+const FwdRef = require( 'undertaker-forward-reference' );
+
+// To allow forward referencing
+gulp.registry( FwdRef() );
 
 requireDir( path.resolve( __dirname, 'src/tools/gulp' ), {
     recurse: true,
     includeFiles: /\.gulp\.js$/
 } );
 
-gulp.task( 'connector', ['connector:js'] );
+const devTasks = gulp.series( 'connector:js:watch', 'connector:server' );
 
-gulp.task( 'connector:dist', ( cb ) => {
-    runSequence( 'connector:clean:dist', ['connector:js:dist', 'connector:docs:dist'], cb );
-} );
-
-gulp.task( 'connector:test', ['connector:test:unit'] );
-
-gulp.task( 'connector:dev', ['connector:js:watch', 'connector:server'] );
-
-gulp.task( 'default', ['connector:dev'] );
+gulp.task( 'default', devTasks );
+gulp.task( 'connector', gulp.series( 'connector:js' ) );
+gulp.task( 'connector:dist', gulp.series( 'connector:clean:dist', gulp.parallel( 'connector:js:dist', 'connector:docs:dist' ) ) );
+gulp.task( 'connector:test', gulp.series( 'connector:test:unit' ) );
+gulp.task( 'connector:dev', devTasks );

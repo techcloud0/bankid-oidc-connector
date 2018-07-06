@@ -6,7 +6,7 @@ const gutil = require( 'gulp-util' );
 const path = require( 'path' );
 const UglifyJsPlugin = require( 'uglifyjs-webpack-plugin' );
 
-const WEBPACK_CONFIG = require( '../config/webpack.config' );
+const WEBPACK_CONFIG = require( '../config/webpack.config.js' );
 const ROOT = path.resolve( __dirname, '../../../' );
 
 const DIST_FOLDER = path.resolve( ROOT, 'dist' );
@@ -19,22 +19,24 @@ const self = this;
 
 
 module.exports.getDevConfig = function() {
-    const devConfig = Object.create( WEBPACK_CONFIG );
+    const devConfig = WEBPACK_CONFIG;
     devConfig.plugins = devConfig.plugins.concat(
         new webpack.DefinePlugin( {
             VERSION: JSON.stringify( PACKAGE_JSON.version ),
             OIDC_URL: JSON.stringify( '' )
         } )
     );
+
     return devConfig;
 };
 
 module.exports.getDistConfig = function( environment ) {
-    const distConfig = Object.create( WEBPACK_CONFIG );
+    const distConfig = WEBPACK_CONFIG;
     const env = process.env.NODE_ENV || 'dev';
 
     distConfig.output.filename = '[name].bundle.min.js';
     distConfig.output.path = DIST_OUTPUT_FOLDER;
+    distConfig.mode = 'production';
 
     let uglifyConfig = {
         compress: {
