@@ -16,7 +16,8 @@ export default {
         'code',
         'application_name',
         'merchant_name',
-        'sign_id'
+        'sign_id',
+        'sign_txt'
     ],
     WINDOW_NAME: 'BankIDOIDCConnectorLoginWindow'
 };
