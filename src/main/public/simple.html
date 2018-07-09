@@ -3,9 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BankID OIDC Connect - Simple Examples</title>
+    <title>BankID OIDC Connect - Simple Example</title>
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/skeleton.css">
+    <script src="js/connector.bundle.js"></script>
+    <script type="text/javascript">
+        function onLogin() {
+            // Default method mode is redirect, so callback handler is not applicable.
+            OIDC.doConnect();
+        }
+
+        // Initialise OIDC with required parameters, method is redirect by default
+        OIDC.doInit({
+            // Merchant given client ID on the OIDC service
+            // TODO: Replace this with your own!
+            client_id: 'your_client_id',
+            // Your callback URL that will receive the Authorization Grant response
+            // TODO: Replace this with your own!
+            redirect_uri: 'https://yourdomain.com/oidc/callback',
+        });
+
+        window.addEventListener('load', function() {
+            var button = document.querySelector('button');
+            button.addEventListener('click', onLogin, false);
+        });
+    </script>
 </head>
 <body>
 
@@ -14,62 +36,33 @@
         <div class="column" style="margin-top: 15%">
             <h3>BankID OIDC Connector</h3>
             <h4>Simple example</h4>
+            <p>OIDC Connector is loaded and initialized synchronously.</p>
             <pre><code>
-    function onLogin() {
-        // Default method mode is redirect, no callback is needed, using default config so passing empty object.
-        OIDC.doConnect({});
-    }
+function onLogin() {
+    // Default method mode is redirect, so callback handler is not applicable.
+    OIDC.doConnect();
+}
 
-    function onOIDCLoaded() {
-        // Initialise OIDC with required parameters, method is redirect by default
-        OIDC.doInit({
-            // URL to OIDC service
-            oidc_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/.well-known/openid-configuration',
-            // Merchant given client ID on the OIDC service
-            // TODO: Replace this with your own!
-            client_id: 'your_client_id',
-            // Your callback URL that will receive the Authorization Grant response
-            // TODO: Replace this with your own!
-            redirect_uri: 'https://yourdomain.com/oidc/callback',
-        });
+// Initialise OIDC with required parameters, method is redirect by default
+OIDC.doInit({
+    // Merchant given client ID on the OIDC service
+    // TODO: Replace this with your own!
+    client_id: 'your_client_id',
+    // Your callback URL that will receive the Authorization Grant response
+    // TODO: Replace this with your own!
+    redirect_uri: 'https://yourdomain.com/oidc/callback',
+});
 
-        var button = document.querySelector('button');
-        button.addEventListener('click', onLogin, false);
-    }
-    document.body.addEventListener( 'oidc-connector-loaded', onOIDCLoaded, false);
+window.addEventListener('load', function() {
+    var button = document.querySelector('button');
+    button.addEventListener('click', onLogin, false);
+});
             </code></pre>
             <button>Logg inn med OIDC</button>
             <p><a href="index.html">Back</a></p>
         </div>
     </div>
 </div>
-
-<script type="text/javascript">
-    function onLogin() {
-        // Default method mode is redirect, so callback handler is not applicable.
-        OIDC.doConnect({});
-    }
-
-    function onOIDCLoaded() {
-        // Initialise OIDC with required parameters, method is redirect by default
-        OIDC.doInit({
-            // URL to OIDC service
-            oidc_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/.well-known/openid-configuration',
-            // Merchant given client ID on the OIDC service
-            // TODO: Replace this with your own!
-            client_id: 'your_client_id',
-            // Your callback URL that will receive the Authorization Grant response
-            // TODO: Replace this with your own!
-            redirect_uri: 'https://yourdomain.com/oidc/callback',
-        });
-
-        var button = document.querySelector('button');
-        button.addEventListener('click', onLogin, false);
-    }
-    document.body.addEventListener( 'oidc-connector-loaded', onOIDCLoaded, false);
-</script>
-
-<script async defer src="js/connector.bundle.js"></script>
 
 </body>
 </html>

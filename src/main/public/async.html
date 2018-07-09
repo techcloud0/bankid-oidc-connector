@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BankID OIDC Connect - Async Examples</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="column" style="margin-top: 15%">
+            <h3>BankID OIDC Connector</h3>
+            <h4>Simple example</h4>
+            <p>OIDC Connector is loaded and initialized asynchronously. Example requires <strong>Promise</strong> support in browser.</p>
+            <pre><code>
+function onOIDCLoaded() {
+    // Initialise OIDC with required parameters, method is redirect by default
+    OIDC.doInit({
+        // Merchant given client ID on the OIDC service
+        // TODO: Replace this with your own!
+        client_id: 'your_client_id',
+        // Your callback URL that will receive the Authorization Grant response
+        // TODO: Replace this with your own!
+        redirect_uri: 'https://yourdomain.com/oidc/callback',
+    }).then( function() {
+        // Executed when doInit has finished
+        var button = document.querySelector('button');
+        button.addEventListener( 'click', function() {
+            OIDC.doConnect();
+        }, false);
+        // Now we can enable the button since the handler is ready.
+        button.disabled = false;
+    });
+}
+document.body.addEventListener( 'oidc-connector-loaded', onOIDCLoaded, false);
+            </code></pre>
+            <button disabled>Logg inn med OIDC</button>
+            <p><a href="index.html">Back</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function onOIDCLoaded() {
+        OIDC.doInit({
+            // Merchant given client ID on the OIDC service
+            // TODO: Replace this with your own!
+            client_id: 'your_client_id',
+            // Your callback URL that will receive the Authorization Grant response
+            // TODO: Replace this with your own!
+            redirect_uri: 'https://yourdomain.com/oidc/callback',
+        }).then( function() {
+            var button = document.querySelector('button');
+            button.addEventListener( 'click', function() {
+                OIDC.doConnect();
+            }, false);
+            // Now we can enable the button since the handler is ready.
+            button.disabled = false;
+        });
+    }
+    document.body.addEventListener( 'oidc-connector-loaded', onOIDCLoaded, false);
+</script>
+<script async defer src="js/connector.bundle.js"></script>
+
+</body>
+</html>

@@ -274,17 +274,33 @@ import { doGetOIDCConfig } from './actions/oidc.actions';
     /**
      * Set parameters used in doConnect calls.
      * @param {OIDCConnect.InitConfiguration} config
-     * @return void
+     * @return Promise (if supported)
      * @memberOf OIDCConnect
      */
     function doInit( config ) {
         if ( !config ) {
             throw Error( `[${TAG}] doInit - missing configuration. You need to pass a configuration object.` );
         }
-        if ( !config.oauth_url && ( config.oidc_url || CONFIG.oidc_url ) ) {
-            doGetOIDCConfig( config.oidc_url || CONFIG.oidc_url, updateConfig.bind( null, config ) );
+
+        const hasPromise = ( 'Promise' in window );
+        if ( hasPromise ) {
+            return new Promise( resolve => {
+                if ( !config.oauth_url && ( config.oidc_url || CONFIG.oidc_url ) ) {
+                    doGetOIDCConfig( config.oidc_url || CONFIG.oidc_url, () => {
+                        updateConfig( config );
+                        resolve();
+                    } );
+                } else {
+                    updateConfig( config );
+                    resolve();
+                }
+            } );
         } else {
-            updateConfig( config );
+            if ( !config.oauth_url && ( config.oidc_url || CONFIG.oidc_url ) ) {
+                doGetOIDCConfig( config.oidc_url || CONFIG.oidc_url, updateConfig.bind( null, config ) );
+            } else {
+                updateConfig( config );
+            }
         }
     }
 

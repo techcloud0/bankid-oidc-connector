@@ -24,7 +24,7 @@ A simple example on how to connect to an OIDC provider like BankID:
             // TODO: Replace this with your own!
             redirect_uri: 'https://yourdomain.com/oidc/callback',
         });
-    };
+    }
     init();
    </script>
   </head>
@@ -42,6 +42,36 @@ A simple example on how to connect to an OIDC provider like BankID:
 * **NOTE: You need to replace `client_id` and `redirect_uri` with your own values as given by the OpenID Connect provider.**
 * By default, the OIDC connector will use redirect UI mode when triggered. Change `method` parameter to `window`, or `inline` for other modes.
 * You can override the authorization_endpoint that is opened by providing `oauth_url` to `OIDC.doInit( { oauth_url: '', ... } )` configuration object.
+
+### Load Asynchronously
+
+```html
+<html>
+  <body>
+    <button disabled>Login</button>
+    <script>
+    function onOIDCLoaded() {
+        OIDC.doInit({
+            // Merchant given client ID on the OIDC service
+            // TODO: Replace this with your own!
+            client_id: 'your_client_id',
+            // Your callback URL that will receive the Authorization Grant response
+            // TODO: Replace this with your own!
+            redirect_uri: 'https://yourdomain.com/oidc/callback',
+        }).then( function() {
+            var button = document.querySelector('button');
+            button.addEventListener( 'click', function() {
+                OIDC.doConnect( {} );
+            }, false);
+            button.disabled = false;
+        });
+    }
+    document.body.addEventListener( 'oidc-connector-loaded', onOIDCLoaded, false);
+    </script>
+    <script src="https://oidc.bankidapis.no/js-connect/v1/js/connector.bundle.min.js" async defer></script>
+  </body>
+</html>
+```
 
 ### Login hint
 
