@@ -192,7 +192,7 @@ import { doGetOIDCConfig } from './actions/oidc.actions';
      * @returns {Window|Element} returns the new window object if method is window, or iframe element if inline.
      * @memberOf OIDCConnect
      */
-    function doConnect(  { callback=null, config={}, inlineOnLoadCallback=null, inlineElementID=null } ) {
+    function doConnect(  { callback=null, config={}, inlineOnLoadCallback=null, inlineElementID=null } = {} ) {
         const clientConfig = getUpdatedClientConfig( config );
         const authorizeUrl = createAuthorizeClientUrl( clientConfig );
 
