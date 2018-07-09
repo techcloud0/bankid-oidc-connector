@@ -230,7 +230,9 @@ import { doGetOIDCConfig } from './actions/oidc.actions';
                     callback: callback
                 } );
 
-                loginWindow.focus();
+                if ( loginWindow ) {
+                    loginWindow.focus();
+                }
                 return loginWindow;
             }
             case 'redirect': {
