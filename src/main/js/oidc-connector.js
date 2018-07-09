@@ -101,7 +101,11 @@ import { doGetOIDCConfig } from './actions/oidc.actions';
      */
     function onLoad() {
         doPolyfill();
-        doSendLoadedEvent();
+        if ( CONFIG.oidc_url ) {
+            doGetOIDCConfig( CONFIG.oidc_url, doSendLoadedEvent );
+        } else {
+            doSendLoadedEvent();
+        }
     }
 
     /**
