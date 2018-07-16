@@ -19,6 +19,7 @@
  * @property {String} prompt
  * @property {String} sign_id
  * @property {String} sign_txt
+ * @property {String} action
  * @property {String} application_name
  * @memberOf OIDCConnect
  */
@@ -44,6 +45,7 @@
  * @property {String} prompt
  * @property {String} sign_id
  * @property {String} sign_txt
+ * @property {String} action
  * @property {String} application_name
  * @memberOf OIDCConnect
  */
