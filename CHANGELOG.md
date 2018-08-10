@@ -1,5 +1,21 @@
 # Changelog - BankID OIDC Connector
 
+## [1.5.0-2] PRERELEASE - 10.08.2018
+
+### Added
+- Support for new parameters: sign_id, sign_txt, action, application_name
+- `OIDC.doInit` now returns an optional Promise (if supported) that fires when `doInit` has completed.
+
+### Updated
+- When building Authorization Endpoint URL, any empty parameters are filtered away.
+- README with latest changes.
+- The loaded event `oidc-connector-loaded` is no longer sent before OIDC config has been retrieved.
+- Updated version of developer dependencies and build tools like gulp, webpack etc. with latest features and security fixes. 
+
+### Removed
+- Removed experimental features such as `OIDC.doGetUserInfo` and auto-exchanging Authorization Code.
+- Removed parameters `token_url` and `userinfo_url` from `OIDC.doInit` configuration object.
+
 ## [1.4.1] - 11.05.2018
 
 ### Updated
