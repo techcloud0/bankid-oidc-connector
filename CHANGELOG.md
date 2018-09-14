@@ -1,6 +1,6 @@
 # Changelog - BankID OIDC Connector
 
-## [1.5.0-2] PRERELEASE - 10.08.2018
+## [1.5.0] - 14.09.2018
 
 ### Added
 - Support for new parameters: sign_id, sign_txt, action, application_name

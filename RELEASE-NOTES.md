@@ -1,7 +1,7 @@
-BankID OIDC Connector v1.5.0-2
-==============================
+BankID OIDC Connector v1.5.0
+============================
 
-BankID OIDC Connector v1.5.0-2 was pre-released on August 10, 2018.
+BankID OIDC Connector v1.5.0 was released on September 14, 2018.
 
 About
 -----
