@@ -105,11 +105,7 @@ import { doGetOIDCConfig } from './actions/oidc.actions';
      */
     function onLoad() {
         doPolyfill();
-        if ( CONFIG.oidc_url ) {
-            doGetOIDCConfig( CONFIG.oidc_url, doSendLoadedEvent );
-        } else {
-            doSendLoadedEvent();
-        }
+        doSendLoadedEvent();
     }
 
     /**
@@ -276,7 +272,7 @@ import { doGetOIDCConfig } from './actions/oidc.actions';
     }
 
     /**
-     * Set parameters used in doConnect calls.
+     * Set parameters used in doConnect calls. Fetches OIDC configuration if needed.
      * @param {OIDCConnect.InitConfiguration} config
      * @return Promise (if supported)
      * @memberOf OIDCConnect
