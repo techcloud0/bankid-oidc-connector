@@ -2,11 +2,12 @@
   "name": "bankid-oidc-connector",
   "version": "1.5.0",
   "description": "Javascript API that simplifies integration with the REST API for front-end based OIDC Clients",
-  "author": "BankID",
+  "author": "Vipps",
   "license": "Apache-2.0",
   "scripts": {
-    "start": "gulp",
-    "test": "gulp connector:test"
+    "start": "./node_modules/.bin/gulp",
+    "build": "./node_modules/.bin/gulp connector:dist",
+    "test": "./node_modules/.bin/gulp connector:test"
   },
   "port": 3000,
   "clientName": "oidc-connector",
