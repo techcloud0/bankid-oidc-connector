@@ -1,5 +1,22 @@
 # Changelog - BankID OIDC Connector
 
+## [2.0.0] - 08.05.2019
+
+### Added
+- Added npm script for building the OIDC connector.
+
+### Updated
+- Changed name of package author to Vipps.
+- Updated dependencies and build tools (gulp, babel, webpack etc.) with latest features and security fixes.
+- Updated Dockerfile to use Node.js 10.15.
+- Development server host set to 0.0.0.0.
+- Local gulp package is used for npm scripts.
+- Updated README to use npm scripts in development section.
+
+### Removed
+- OIDC configuration is no longer fetched in `onload` event handler. Prevents potential conflict with `OIDC.doInit`.
+- Removed unused code related to the development server.
+
 ## [1.5.0] - 14.09.2018
 
 ### Added
