@@ -102,14 +102,13 @@ A node server is used to host the connector and example pages. Gulp is used to b
 ### Installation
 
 ```
-npm install --global gulp-cli
 npm install
 ```
 
 ### Run
 
 ```bash
-gulp
+npm start
 ```
 This will watch for changes in `src/main/js` and a server will be hosted on [https://localhost:3000](https://localhost:3000) where you will find more examples.
 
@@ -120,7 +119,7 @@ The connector bundle is hosted at [https://localhost:3000/js/connector.bundle.js
 If you want to build your own OIDC connector distribution:
 
 ```bash
-gulp connector:dist
+npm run build
 ```
 
 ### HTTPS
