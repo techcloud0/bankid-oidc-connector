@@ -13,7 +13,7 @@ A simple example on how to connect to an OIDC provider like BankID:
 ```html
 <html>
  <head>
-   <script src="https://oidc.bankidapis.no/js-connect/v1/js/connector.bundle.min.js"></script>
+   <script src="https://oidc.bankidapis.no/js-connect/v2/js/connector.bundle.min.js"></script>
    <script>
     function init() {
         OIDC.doInit({
@@ -68,7 +68,7 @@ A simple example on how to connect to an OIDC provider like BankID:
     }
     document.body.addEventListener( 'oidc-connector-loaded', onOIDCLoaded, false);
     </script>
-    <script src="https://oidc.bankidapis.no/js-connect/v1/js/connector.bundle.min.js" async defer></script>
+    <script src="https://oidc.bankidapis.no/js-connect/v2/js/connector.bundle.min.js" async defer></script>
   </body>
 </html>
 ```
