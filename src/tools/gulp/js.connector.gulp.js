@@ -3,7 +3,8 @@ const TAG = 'OIDC-Connector';
 const webpack = require( 'webpack' );
 
 const gulp = require( 'gulp' );
-const gutil = require( 'gulp-util' );
+const log = require('fancy-log');
+const PluginError = require('plugin-error');
 const path = require( 'path' );
 const del = require( 'del' );
 
@@ -25,12 +26,12 @@ gulp.task( 'connector:js:watch', callback => {
         aggregateTimeout: 300
     }, ( err, stats ) => {
         if ( err ) {
-            gutil.log( `[${TAG}~error]`, new gutil.PluginError( `[${TAG}]`, err ) );
+            log.error( `[${TAG}~error]`, new PluginError( `[${TAG}]`, err ) );
             callback();
             return;
         }
 
-        gutil.log( `[${TAG}~webpack]`, stats.toString( 'minimal' ) );
+        log( `[${TAG}~webpack]`, stats.toString( 'minimal' ) );
         callback();
     } );
 } );

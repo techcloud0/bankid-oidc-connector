@@ -2,7 +2,8 @@ const TAG = 'OIDC-Connector';
 
 const webpack = require( 'webpack' );
 
-const gutil = require( 'gulp-util' );
+const log = require('fancy-log');
+const PluginError = require('plugin-error');
 const path = require( 'path' );
 const UglifyJsPlugin = require( 'uglifyjs-webpack-plugin' );
 
@@ -65,11 +66,11 @@ module.exports.getDistConfig = function( environment ) {
 module.exports.runWebPack = function( compiler, callback ) {
     compiler.run( ( err, stats ) => {
         if ( err ) {
-            gutil.log( `[${TAG}~error]`, new gutil.PluginError( `[${TAG}]`, err ) );
+            log.error(`[${TAG}~error]`, new PluginError(`[${TAG}]`, err));
             return;
         }
 
-        gutil.log( `[${TAG}~webpack]`, stats.toString( 'minimal' ) );
+        log(`[${TAG}~webpack]`, stats.toString( 'minimal' ));
 
         if ( callback ) {
             callback();
