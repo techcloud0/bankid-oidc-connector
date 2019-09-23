@@ -34,8 +34,8 @@ if ( CONFIG && CONFIG.environments && fs.existsSync( MAVEN_CONFIG ) ) {
     } );
 
     gulp.task( 'connector:dist:package:all',
-        gulp.series( 'connector:clean:dist', 'connector:docs:dist', ...Object.keys( CONFIG.environments ).map( ( environment ) => {
-            return `connector:dist:package:${environment}`;
+        gulp.series( ...Object.keys( CONFIG.environments ).map( ( environment ) => {
+            return ['connector:clean:dist', 'connector:docs:dist', `connector:dist:package:${environment}`];
         } ) )
     );
 }

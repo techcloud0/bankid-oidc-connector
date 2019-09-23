@@ -32,7 +32,7 @@ module.exports.getDevConfig = function() {
 };
 
 module.exports.getDistConfig = function( environment ) {
-    const distConfig = WEBPACK_CONFIG;
+    const distConfig = Object.assign({}, WEBPACK_CONFIG);
     const env = process.env.NODE_ENV || 'dev';
 
     distConfig.output.filename = '[name].bundle.min.js';
@@ -79,6 +79,7 @@ module.exports.runWebPack = function( compiler, callback ) {
 };
 
 module.exports.buildJS = function( environment, callback ) {
-    const compiler = webpack( self.getDistConfig( environment ) );
+    const config = self.getDistConfig( environment );
+    const compiler = webpack( config );
     self.runWebPack( compiler, callback );
 };
