@@ -1,5 +1,10 @@
 # Changelog - BankID OIDC Connector
 
+## [2.0.1] - 23.09.2019
+
+### Updated
+- Updated dependencies
+
 ## [2.0.0] - 08.05.2019
 
 ### Added

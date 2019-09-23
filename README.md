@@ -97,7 +97,7 @@ A node server is used to host the connector and example pages. Gulp is used to b
 
 ### Requirements
 
-- NodeJS 6+
+- NodeJS 10+
 
 ### Installation
 
