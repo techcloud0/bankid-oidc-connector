@@ -24,7 +24,7 @@ function onOIDCLoaded() {
         client_id: 'your_client_id',
         // Your callback URL that will receive the Authorization Grant response
         // TODO: Replace this with your own!
-        redirect_uri: 'https://yourdomain.com/oidc/callback',
+        redirect_uri: 'https://example.org/oidc/callback',
     }).then( function() {
         // Executed when doInit has finished
         var button = document.querySelector('button');
@@ -51,7 +51,7 @@ document.body.addEventListener( 'oidc-connector-loaded', onOIDCLoaded, false);
             client_id: 'your_client_id',
             // Your callback URL that will receive the Authorization Grant response
             // TODO: Replace this with your own!
-            redirect_uri: 'https://yourdomain.com/oidc/callback',
+            redirect_uri: 'https://example.org/oidc/callback',
         }).then( function() {
             var button = document.querySelector('button');
             button.addEventListener( 'click', function() {
