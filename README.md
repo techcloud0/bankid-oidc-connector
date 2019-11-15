@@ -34,13 +34,41 @@ Here is a simple example on how to connect to BankID OIDC Provider by including 
         document.body.addEventListener( 'oidc-connector-loaded', onOIDCLoaded, false);
     </script>
 
-    <!-- Loading Connector for environment: CURRENT -->
+    <!-- Loading Connector for environment CURRENT -->
     <script src="https://oidc-current.bankidapis.no/js-connect/v2/js/connector.bundle.min.js" async defer></script>
   </body>
 </html>
 ```
 
-### Integration method
+### Initialize required config
+
+First we need to initialize the library with some minimal configuration - your application's `client_id` and `redirect_uri`.
+
+```javascript
+OIDC.doInit({
+    client_id: 'your_client_id',
+    redirect_uri: 'https://example.org/oidc/callback',
+}).then(() => {
+    console.log("OIDC Connector loaded!");
+});
+```
+
+The URL to the authorization endpoint will be automatically determined by requesting the OIDC discovery endpoint depending on the environment. 
+When this request has completed, `doInit` fulfills the promise.
+
+### Change authorization endpoint
+
+You can override it to point to a custom endpoint by providing the `oauth_url` option:
+
+```javascript
+OIDC.doInit( {
+    client_id: 'your_client_id',
+    redirect_uri: 'https://example.org/oidc/callback',
+    oauth_url: 'https://auth.example.org/oidc/authenticate'
+} );
+```
+
+### Window integration method
 
 The OIDC connector will redirect the user by default. Change `method` parameter to `window` to open a popup instead.
 
@@ -52,21 +80,11 @@ OIDC.doConnect( {
 } );
 ```
 
-### Change authorization endpoint
-
-You can override the authorization_endpoint that is opened by providing `oauth_url` to `OIDC.doInit`.
-
-```javascript
-OIDC.doInit( {
-    client_id: 'your_client_id',
-    redirect_uri: 'https://example.org/oidc/callback',
-    oauth_url: 'https://auth.example.org/oidc/authenticate'
-} );
-```
+Remember to only call this in the context of a user action to avoid native popup blockers.
 
 ### Login hint
 
-You can for example use `login_hint` to select authentication method.
+You can for example use `login_hint` to pre-select authentication method.
 
 Specify it in the `OIDC.doInit` call to apply it globally:
 ```javascript
