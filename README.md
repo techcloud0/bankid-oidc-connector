@@ -56,7 +56,19 @@ OIDC.doInit({
 The URL to the authorization endpoint will be automatically determined by requesting the OIDC discovery endpoint depending on the environment. 
 When this request has completed, `doInit` fulfills the promise.
 
-### Change authorization endpoint
+### Start authentication
+
+Now we are ready to start authentication. Typically, you do this in response to a user action such as button clicks.
+
+```javascript
+OIDC.doConnect();
+```
+
+This will redirect the browser to the authorization endpoint.
+
+### Additional options
+
+#### Change authorization endpoint
 
 You can override it to point to a custom endpoint by providing the `oauth_url` option:
 
@@ -68,7 +80,7 @@ OIDC.doInit( {
 } );
 ```
 
-### Window integration method
+#### Window integration method
 
 The OIDC connector will redirect the user by default. Change `method` parameter to `window` to open a popup instead.
 
@@ -82,7 +94,7 @@ OIDC.doConnect( {
 
 Remember to only call this in the context of a user action to avoid native popup blockers.
 
-### Login hint
+#### Login hint
 
 You can for example use `login_hint` to pre-select authentication method.
 
