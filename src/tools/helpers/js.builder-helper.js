@@ -5,7 +5,7 @@ const webpack = require( 'webpack' );
 const log = require('fancy-log');
 const PluginError = require('plugin-error');
 const path = require( 'path' );
-const UglifyJsPlugin = require( 'uglifyjs-webpack-plugin' );
+const TerserPlugin = require( 'terser-webpack-plugin' );
 
 const WEBPACK_CONFIG = require( '../config/webpack.config.js' );
 const ROOT = path.resolve( __dirname, '../../../' );
@@ -39,7 +39,7 @@ module.exports.getDistConfig = function( environment ) {
     distConfig.output.path = DIST_OUTPUT_FOLDER;
     distConfig.mode = 'production';
 
-    let uglifyConfig = {
+    let terserConfig = {
         compress: {
             drop_console: env !== 'dev'
         }
@@ -54,7 +54,7 @@ module.exports.getDistConfig = function( environment ) {
     }
 
     distConfig.plugins = distConfig.plugins.concat(
-        new UglifyJsPlugin( { uglifyOptions: uglifyConfig } ),
+        new TerserPlugin( { terserOptions: terserConfig } ),
         new webpack.DefinePlugin( {
             VERSION: JSON.stringify( PACKAGE_JSON.version ),
             OIDC_URL: JSON.stringify( oidcUrl )
