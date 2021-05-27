@@ -129,17 +129,17 @@ Sets the global configuration used for any doConnect calls.
 | Parameter        | Description           | Default  | Required  | 
 | ------------- |-------------|-----|-----|
 | client_id      | Unique ID (arbitrary string) for the OIDC Client in question. This is created as part of the provisioning process. |  | Yes |
-| redirect_uri      |       |    | Yes |
+| redirect_uri      |  Your registered callback URI where the user will end-up after authentication. MUST be preregistered in the OIDC Provider!     |    | Yes |
 | oauth_url | Absolute URL to the OIDC Authorize endpoint.     |   (default authorize endpoint) | No. The OIDC Connector determines the correct URL value via the output from oidc_url |
 | oidc_url | Absolute URL to the OIDC Openid-configuration endpoint.     |   (default .well-known endpoint) | No. The OIDC Connector embeds the correct URL value|
 | scope | Absolute URL to the OIDC Authorize endpoint.     |   'openid' |  |
-| method | Integration method. One of redirect, window or inline.     |   'redirect' | |
+| method | Integration method. One of redirect or window. 'inline' is deprecated as we do not recommend iframe integration method.  |   'redirect' | |
 | response_type | Determines the message flow to be used, thus also governing the content and type of the response from the Authorize endpoint.      |   'code' | |
 | response_mode | The response mode to be used for returning parameters from the Authorization Endpoint via redirect_uri.     |   'query' | |
 | prompt | Support for the standardized values none and login. The former can be used to check for an existing (still valid) authentication session with the OIDC provider.     |   | |
 | acr | Requests use of specific Identity provider (IDP), or any IDP at a given Level of Assurance (Authentication Context Class Reference) or above.     |   4 | |
 | login_hint | his parameter may be used to specify the use of any particularly named IDP along with any pre-configuration for the designated IDP. For example: 'BID'   |    | |
-| state | Opaque value used to maintain state between the request and the callback.      |   'untouched'  | |
+| state | Opaque value used to maintain state between the request and the callback. Very important to track state and useful in support requests. |   'untouched'  | Highly recommended to track requests |
 | nonce | String value used to associate a ODIC Client session with an ID Token, and to mitigate replay attacks. The value is passed through unmodified from the Authentication Request to the ID Token     |    | |
 | ui_locales | May be used to set a language preference for GUI handling. BankID OIDC supports 'nb' (Norsk Bokmål) and 'en' (English).    |   'nb' | |
 | id_token_hint | JWT value for an ID Token previously issued by the OIDC Provider used as a hint about the enduser's authenticated session with the OIDC provider.    |    | |
@@ -189,6 +189,8 @@ This way you can trigger the following types of messages to seamlessly integrate
 ## Additional reading
 
 See also official [documentation](https://confluence.bankidnorge.no/confluence/pdoidcl/technical-documentation/js-connector) from OIDC Provider BankID.
+
+Please subscribe to the BankID Services statuspage to receive regular operational updates on the BankID OIDC service: https://bankid-services.statuspage.io/ 
 
 See [Release Notes](RELEASE-NOTES.md) for latest version and [Change Log](CHANGELOG.md) for release notes on all releases.
 
