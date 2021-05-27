@@ -1,0 +1,8 @@
+{
+  "groupId": "no.bankid.oidc",
+  "artifactId": "{name}",
+  "buildDir": "dist",
+  "finalName": "{name}",
+  "type": "jar",
+  "fileEncoding": "utf-8"
+}
