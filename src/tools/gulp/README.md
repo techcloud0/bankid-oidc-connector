@@ -6,8 +6,3 @@ ___TODO___ Write more about commands
 
 - `gulp connector:js`
 - `gulp connector:js:watch`
-
-## Tests
-
-- `gulp connector:test:unit`
-

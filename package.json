@@ -6,8 +6,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "./node_modules/.bin/gulp",
-    "build": "./node_modules/.bin/gulp connector:dist",
-    "test": "./node_modules/.bin/gulp connector:test"
+    "build": "./node_modules/.bin/gulp connector:dist"
   },
   "port": 3000,
   "clientName": "oidc-connector",
@@ -24,7 +23,6 @@
     "gulp": "^4.0.2",
     "gulp-connect": "^5.7.0",
     "html-loader": "^0.4.5",
-    "karma": "^4.2.0",
     "maven-deploy": "^1.5.0",
     "mime": "^2.4.4",
     "plugin-error": "^1.0.1",

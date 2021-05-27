@@ -17,5 +17,4 @@ const devTasks = gulp.series( 'connector:js:watch', 'connector:server' );
 gulp.task( 'default', devTasks );
 gulp.task( 'connector', gulp.series( 'connector:js' ) );
 gulp.task( 'connector:dist', gulp.series( 'connector:clean:dist', gulp.parallel( 'connector:js:dist', 'connector:docs:dist' ) ) );
-gulp.task( 'connector:test', gulp.series( 'connector:test:unit' ) );
 gulp.task( 'connector:dev', devTasks );
