@@ -2,5 +2,10 @@
     "clientSecret": "changeme",
     "tokenUrl": "/api/token",
     "userInfoUrl": "/api/userinfo",
-    "https": true
+    "https": true,
+    "environments": {
+        "PREPROD": "https://auth.preprod.bankid.no/auth/realms/preprod/.well-known/openid-configuration",
+        "CURRENT": "https://auth.current.bankid.no/auth/realms/current/.well-known/openid-configuration",
+        "PRODUCTION": "https://oidc.bankidapis.no/auth/realms/prod/.well-known/openid-configuration"
+    }
 }
