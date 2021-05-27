@@ -31,13 +31,13 @@
         // Initialise OIDC with required parameters
         OIDC.doInit({
             // URL to OIDC service
-            oidc_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/.well-known/openid-configuration',
+            oidc_url: 'https://auth.current.bankid.no/auth/realms/current/.well-known/openid-configuration',
             // Merchant given client ID on the OIDC service
             // TODO: Replace this with your own!
-            client_id: 'your_client_id',
+            client_id: 'oidc-testclient',
             // Your callback URL that will receive the Authorization Grant response
             // TODO: Replace this with your own!
-            redirect_uri: 'https://example.org/oidc/callback',
+            redirect_uri: 'https://util.bankidnorge.no/oidc-testclient/callback',
             // Set window as chosen integration method
             method: 'window',
         });
@@ -77,13 +77,13 @@
         // Initialise OIDC with required parameters
         OIDC.doInit({
             // URL to OIDC service
-            oidc_url: 'https://oidc-preprod.bankidapis.no/auth/realms/preprod/.well-known/openid-configuration',
+            oidc_url: 'https://auth.current.bankid.no/auth/realms/current/.well-known/openid-configuration',
             // Merchant given client ID on the OIDC service
             // TODO: Replace this with your own!
-            client_id: 'your_client_id',
+            client_id: 'oidc-testclient',
             // Your callback URL that will receive the Authorization Grant response
             // TODO: Replace this with your own!
-            redirect_uri: 'https://example.org/oidc/callback',
+            redirect_uri: 'https://util.bankidnorge.no/oidc-testclient/callback',
             // Set window as chosen integration method
             method: 'window',
         });

@@ -9,7 +9,7 @@ This library works for any OpenID Connect Identity provider, but it is especiall
 Here is a simple example on how to connect to BankID OIDC Provider by including the library directly in your application:
 
 ```html
-<html>
+<html lang="en">
   <body>
     <!-- Button is disabled until the Connector is ready to connect. -->
     <button disabled>Login</button>
@@ -35,7 +35,7 @@ Here is a simple example on how to connect to BankID OIDC Provider by including 
     </script>
 
     <!-- Loading Connector for environment CURRENT -->
-    <script src="https://oidc-current.bankidapis.no/js-connect/v2/js/connector.bundle.min.js" async defer></script>
+    <script src="https://auth.current.bankid.no/js-connect/v2/js/connector.bundle.min.js" async defer></script>
   </body>
 </html>
 ```
