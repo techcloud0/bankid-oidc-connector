@@ -6,7 +6,8 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "./node_modules/.bin/gulp",
-    "build": "./node_modules/.bin/gulp connector:dist"
+    "build": "./node_modules/.bin/gulp connector:dist",
+    "package": "./node_modules/.bin/gulp connector:dist:package:all"
   },
   "port": 3000,
   "clientName": "oidc-connector",
