@@ -2,7 +2,7 @@
   "name": "bankid-oidc-connector",
   "version": "2.1.0",
   "description": "Javascript API that simplifies integration with the REST API for front-end based OIDC Clients",
-  "author": "Vipps",
+  "author": "BankID",
   "license": "Apache-2.0",
   "scripts": {
     "start": "./node_modules/.bin/gulp",

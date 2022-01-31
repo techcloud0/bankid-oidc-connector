@@ -1,5 +1,10 @@
 # Changelog - BankID OIDC Connector
 
+## [2.0.2] - 28.01.2022
+
+### Updated
+- Changed name of package author to BankID.
+
 ## [2.0.1] - 23.09.2019
 
 ### Updated
